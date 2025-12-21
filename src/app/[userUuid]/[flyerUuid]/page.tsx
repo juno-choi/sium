@@ -89,7 +89,7 @@ export default async function PublicFlyerViewerPage({ params }: PageProps) {
             {/* 푸터 영역 */}
             <footer className="mt-12 py-8 border-t border-gray-100 text-center">
                 <p className="text-sm text-gray-400">
-                    Powered by <span className="font-bold text-gray-600">Sium</span>
+                    Powered by <a href="/" target="_blank" rel="noopener noreferrer" className="font-bold text-gray-600 hover:text-brand-600 transition-colors">Sium</a>
                 </p>
             </footer>
         </main>
