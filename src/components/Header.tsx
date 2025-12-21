@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { User, LogOut, Menu, X, PlusCircle } from 'lucide-react';
+import { User, LogOut, Menu, X, LayoutGrid } from 'lucide-react';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
@@ -29,7 +29,6 @@ export default function Header({ user }: HeaderProps) {
                 <div className="flex items-center justify-between h-16">
                     {/* Logo */}
                     <Link href="/" className="flex items-center space-x-2">
-                        <div className="w-8 h-8 bg-gradient-to-br from-brand-500 to-brand-600 rounded-lg" />
                         <span className="text-xl font-bold text-gray-900">
                             Sium
                         </span>
@@ -40,11 +39,11 @@ export default function Header({ user }: HeaderProps) {
                         {user ? (
                             <>
                                 <Link
-                                    href="/flyers/new"
+                                    href="/flyers"
                                     className="flex items-center space-x-2 px-4 py-2 bg-brand-500 text-white rounded-lg hover:bg-brand-600 transition"
                                 >
-                                    <PlusCircle className="w-4 h-4" />
-                                    <span>새 전단지</span>
+                                    <LayoutGrid className="w-4 h-4" />
+                                    <span>전단지 목록</span>
                                 </Link>
 
                                 {/* Profile Dropdown */}
@@ -62,11 +61,11 @@ export default function Header({ user }: HeaderProps) {
                                     {isProfileOpen && (
                                         <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1">
                                             <Link
-                                                href="/flyers"
+                                                href="/flyers/new"
                                                 className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
                                                 onClick={() => setIsProfileOpen(false)}
                                             >
-                                                전단지 목록
+                                                새 전단지 작성
                                             </Link>
                                             <button
                                                 onClick={handleLogout}
@@ -107,19 +106,19 @@ export default function Header({ user }: HeaderProps) {
                             {user ? (
                                 <>
                                     <Link
-                                        href="/flyers/new"
+                                        href="/flyers"
                                         className="flex items-center space-x-2 px-4 py-2 text-brand-600 font-medium"
                                         onClick={() => setIsMenuOpen(false)}
                                     >
-                                        <PlusCircle className="w-5 h-5" />
-                                        <span>새 전단지 작성</span>
+                                        <LayoutGrid className="w-5 h-5" />
+                                        <span>전단지 목록</span>
                                     </Link>
                                     <Link
-                                        href="/flyers"
+                                        href="/flyers/new"
                                         className="px-4 py-2 text-gray-700 hover:bg-gray-50"
                                         onClick={() => setIsMenuOpen(false)}
                                     >
-                                        전단지 목록
+                                        새 전단지 작성
                                     </Link>
                                     <div className="border-t border-gray-100 my-2"></div>
                                     <div className="px-4 py-2 text-sm text-gray-500">

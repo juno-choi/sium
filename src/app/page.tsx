@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Layout, Upload, Share2, PlusCircle, ArrowRight, Zap, CheckCircle } from 'lucide-react';
 
 export default async function LandingPage() {
@@ -142,7 +143,6 @@ export default async function LandingPage() {
       <footer className="bg-white border-t border-gray-100 py-12">
         <div className="container mx-auto px-4 text-center ">
           <div className="flex items-center justify-center space-x-2 mb-4">
-            <div className="w-6 h-6 bg-brand-600 rounded-md" />
             <span className="text-xl font-bold text-gray-900">Sium</span>
           </div>
           <p className="text-gray-500 text-sm">
