@@ -70,57 +70,52 @@ export function generateAppleTemplateHTML(data: AppleTemplateData): string {
 
     return `
     <div class="apple-template">
+        <!-- 상단: 이미지 및 연락처/계좌번호 -->
         <div class="apple-top-grid">
-            <!-- 5KG 가격표 -->
-            ${renderPriceTable('과수(5KG)', table5kg, 'bg-red')}
+            <div class="apple-card image-card">
+                ${appleImageUrl ? `<img src="${escapeHtml(appleImageUrl)}" alt="사과" class="top-apple-img" />` : '<div class="no-image">사과 이미지</div>'}
+            </div>
+            
+            <div class="contact-account-vertical">
+                <div class="apple-card contact-account-card">
+                    <h2 class="section-title text-red"><span>📞</span> 전화번호</h2>
+                    <div class="contact-grid">
+                        ${contacts.map(c => `
+                            <div class="contact-box-simple">
+                                <span class="contact-name">${escapeHtml(c.name)}</span>
+                                <span class="contact-phone">${escapeHtml(c.phone)}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
 
-            <!-- 사과즙 판매 -->
-            <div class="apple-card juice-card">
-                <div class="juice-badge">사과즙 판매</div>
-                ${juiceSale.imageUrl ? `<img src="${escapeHtml(juiceSale.imageUrl)}" alt="사과즙" class="juice-img" />` : ''}
-                <div class="juice-info">
-                    <div class="juice-title">${escapeHtml(juiceSale.productName)}</div>
-                    <div class="juice-price">${escapeHtml(juiceSale.price)}</div>
-                    <div class="juice-note">(${escapeHtml(juiceSale.shippingNote)})</div>
+                <div class="apple-card contact-account-card mt-4">
+                    <h2 class="section-title text-green"><span>✅</span> 계좌번호</h2>
+                    <div class="account-box-simple">
+                        <div class="account-number">${escapeHtml(account.number)}</div>
+                        <div class="account-details">${escapeHtml(account.bank)} - ${escapeHtml(account.owner)}</div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- 전화번호 섹션 -->
-        <div class="apple-section">
-            <h2 class="section-title text-red"><span>📞</span> 전화번호</h2>
-            <div class="contact-grid">
-                ${contacts.map(c => `
-                    <div class="contact-box">
-                        <div class="contact-name">${escapeHtml(c.name)}</div>
-                        <div class="contact-phone">${escapeHtml(c.phone)}</div>
-                    </div>
-                `).join('')}
-            </div>
-        </div>
-
-        <!-- 품종 및 주문 안내 -->
-        <div class="apple-info-banner">
+        <!-- 품종, 주문 안내 및 택배비 안내 -->
+        <div class="apple-info-banner mt-4">
             <p class="varieties-text">${escapeHtml(varieties)}</p>
             <p class="order-text">주문 시 <span class="text-highlight">"성함, 전화번호, 주소"</span> 보내주세요</p>
         </div>
 
-        <!-- 택배비 배너 -->
         <div class="apple-shipping-banner">
             ${escapeHtml(shippingFee)}
         </div>
 
-        <!-- 계좌번호 및 10KG 테이블 -->
-        <div class="apple-bottom-grid">
-            <div class="apple-section">
-                <h2 class="section-title text-green"><span>✅</span> 계좌번호</h2>
-                <div class="account-box">
-                    <div class="account-number">${escapeHtml(account.number)}</div>
-                    <div class="account-details">${escapeHtml(account.bank)} - ${escapeHtml(account.owner)}</div>
-                </div>
-                ${appleImageUrl ? `<img src="${escapeHtml(appleImageUrl)}" alt="사과" class="bottom-apple-img" />` : ''}
-            </div>
-            
+        <!-- 5KG 가격표 -->
+        <div class="apple-section">
+            ${renderPriceTable('과수(5KG)', table5kg, 'bg-red')}
+        </div>
+
+        <!-- 10KG 테이블 -->
+        <div class="apple-bottom-section">
             ${renderPriceTable('과수(10KG)', table10kg, 'bg-green')}
         </div>
 
@@ -154,10 +149,23 @@ export function generateAppleTemplateHTML(data: AppleTemplateData): string {
 
         .apple-top-grid {
             display: grid;
-            grid-template-columns: 3fr 2fr;
+            grid-template-columns: 1fr 1fr;
             gap: 20px;
             margin-bottom: 24px;
         }
+
+        .contact-account-vertical {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .contact-account-card {
+            padding: 16px;
+        }
+
+        .mt-4 { margin-top: 16px; }
+        .mb-6 { margin-bottom: 24px; }
 
         @media (max-width: 640px) {
             .apple-top-grid {
@@ -195,62 +203,57 @@ export function generateAppleTemplateHTML(data: AppleTemplateData): string {
             color: #333;
         }
 
-        .juice-card {
+        .image-card {
             display: flex;
-            flex-direction: column;
             align-items: center;
-            padding: 16px;
-            text-align: center;
+            justify-content: center;
+            background: #f9f9f9;
+            min-height: 200px;
         }
 
-        .juice-badge {
-            background: var(--apple-green);
-            color: white;
-            padding: 4px 12px;
-            border-radius: 99px;
+        .top-apple-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .no-image {
+            color: #ccc;
             font-weight: bold;
-            font-size: 14px;
-            margin-bottom: 12px;
         }
-
-        .juice-img {
-            width: 80px;
-            height: auto;
-            margin-bottom: 12px;
-        }
-
-        .juice-title { font-size: 18px; font-weight: bold; margin-bottom: 4px; }
-        .juice-price { font-size: 20px; font-weight: 800; color: var(--apple-red); }
-        .juice-note { font-size: 12px; color: #666; }
 
         .apple-section { margin-bottom: 24px; }
         .section-title {
             display: flex;
             align-items: center;
             gap: 8px;
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 900;
-            margin-bottom: 12px;
+            margin-bottom: 8px;
         }
         .text-red { color: var(--apple-red); }
         .text-green { color: var(--apple-green); }
 
         .contact-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
 
-        .contact-box, .account-box {
-            background: white;
-            border: 2px solid #000;
-            border-radius: 12px;
-            padding: 12px;
-            text-align: center;
+        .contact-box-simple {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 4px 0;
+            border-bottom: 1px dashed #eee;
         }
 
-        .contact-name { font-size: 14px; font-weight: bold; margin-bottom: 2px; }
-        .contact-phone { font-size: 18px; font-weight: 800; }
+        .contact-name { font-size: 14px; font-weight: bold; color: #666; }
+        .contact-phone { font-size: 16px; font-weight: 800; color: #000; }
+
+        .account-box-simple {
+            text-align: left;
+        }
 
         .apple-info-banner {
             text-align: center;
@@ -271,30 +274,12 @@ export function generateAppleTemplateHTML(data: AppleTemplateData): string {
             margin-bottom: 24px;
         }
 
-        .apple-bottom-grid {
-            display: grid;
-            grid-template-columns: 2fr 3fr;
-            gap: 20px;
+        .apple-bottom-section {
+            margin-bottom: 24px;
         }
 
-        @media (max-width: 640px) {
-            .apple-bottom-grid {
-                grid-template-columns: 1fr;
-            }
-            .contact-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .account-number { font-size: 18px; font-weight: 900; margin-bottom: 4px; }
-        .account-details { font-size: 14px; font-weight: 700; color: #666; }
-
-        .bottom-apple-img {
-            width: 100%;
-            height: auto;
-            margin-top: 16px;
-            border-radius: 12px;
-        }
+        .account-number { font-size: 16px; font-weight: 900; margin-bottom: 2px; }
+        .account-details { font-size: 12px; font-weight: 700; color: #666; }
 
         .apple-footer {
             margin-top: 32px;

@@ -52,7 +52,7 @@ const DEFAULT_APPLE_DATA: AppleTemplateData = {
     ],
     varieties: '아리수, 감홍, 시나노골드, 부사 판매',
     orderInstruction: '주문 시 "성함, 전화번호, 주소" 보내주세요',
-    shippingFee: '택배비 별도 5천원',
+    shippingFee: '택배비 포함',
     account: {
         bank: '농협',
         number: '000-0000-0000-00',
@@ -267,45 +267,25 @@ export default function FlyerForm({ mode, initialData, flyerId, onSuccess }: Fly
             ) : (
                 /* Apple Template Fields */
                 <div className="space-y-8">
-                    {/* 사과즙 판매 섹션 */}
+                    {/* 사과 이미지 업로드 섹션 (기존 사과즙 판매 위치) */}
                     <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-4">
                         <h3 className="text-lg font-bold flex items-center gap-2 border-b pb-2">
-                            <span className="bg-green-100 text-green-600 p-1 rounded">🧃</span> 사과즙 판매 정보
+                            <span className="bg-red-100 text-red-600 p-1 rounded">🍎</span> 사과 이미지
                         </h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-4">
                             <div className="space-y-1">
-                                <label className="text-xs font-semibold text-gray-500">상품명</label>
-                                <input
-                                    type="text"
-                                    value={appleData.juiceSale.productName}
-                                    onChange={(e) => setAppleData({ ...appleData, juiceSale: { ...appleData.juiceSale, productName: e.target.value } })}
-                                    className="w-full px-3 py-2 border rounded-lg"
-                                />
-                            </div>
-                            <div className="space-y-1">
-                                <label className="text-xs font-semibold text-gray-500">가격</label>
-                                <input
-                                    type="text"
-                                    value={appleData.juiceSale.price}
-                                    onChange={(e) => setAppleData({ ...appleData, juiceSale: { ...appleData.juiceSale, price: e.target.value } })}
-                                    className="w-full px-3 py-2 border rounded-lg"
-                                />
-                            </div>
-                            <div className="space-y-1">
-                                <label className="text-xs font-semibold text-gray-500">배송안내 (예: 택배비 포함)</label>
-                                <input
-                                    type="text"
-                                    value={appleData.juiceSale.shippingNote}
-                                    onChange={(e) => setAppleData({ ...appleData, juiceSale: { ...appleData.juiceSale, shippingNote: e.target.value } })}
-                                    className="w-full px-3 py-2 border rounded-lg"
-                                />
-                            </div>
-                            <div className="space-y-1">
-                                <label className="text-xs font-semibold text-gray-500">사과즙 이미지</label>
-                                <ImageUpload onUploadComplete={(url) => handleAppleImageUpload(url, 'juice')} disabled={isSubmitting} />
-                                {appleData.juiceSale.imageUrl && (
-                                    <div className="relative w-16 h-16 mt-2 border rounded overflow-hidden">
-                                        <Image src={appleData.juiceSale.imageUrl} alt="juice" fill className="object-cover" />
+                                <label className="text-xs font-semibold text-gray-500">전단지 상단에 노출될 사과 이미지</label>
+                                <ImageUpload onUploadComplete={(url) => handleAppleImageUpload(url, 'apple')} disabled={isSubmitting} />
+                                {appleData.appleImageUrl && (
+                                    <div className="relative w-full aspect-video mt-2 border rounded-lg overflow-hidden group">
+                                        <Image src={appleData.appleImageUrl} alt="apple" fill className="object-cover" />
+                                        <button
+                                            type="button"
+                                            onClick={() => setAppleData({ ...appleData, appleImageUrl: '' })}
+                                            className="absolute top-2 right-2 bg-black/50 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition"
+                                        >
+                                            <X className="w-4 h-4" />
+                                        </button>
                                     </div>
                                 )}
                             </div>
@@ -528,15 +508,6 @@ export default function FlyerForm({ mode, initialData, flyerId, onSuccess }: Fly
                                     onChange={(e) => setAppleData({ ...appleData, shippingFee: e.target.value })}
                                     className="w-full px-3 py-2 border rounded-lg"
                                 />
-                            </div>
-                            <div className="space-y-1">
-                                <label className="text-xs font-semibold text-gray-500">사과 이미지</label>
-                                <ImageUpload onUploadComplete={(url) => handleAppleImageUpload(url, 'apple')} disabled={isSubmitting} />
-                                {appleData.appleImageUrl && (
-                                    <div className="relative w-24 h-24 mt-2 border rounded overflow-hidden">
-                                        <Image src={appleData.appleImageUrl} alt="apple" fill className="object-cover" />
-                                    </div>
-                                )}
                             </div>
                         </div>
                     </div>
