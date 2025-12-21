@@ -35,6 +35,7 @@ export default async function FlyersPage({
         avatar_url
       )
     `, { count: 'exact' })
+        .eq('user_id', user.id)
         .order('created_at', { ascending: false })
         .range(offset, offset + ITEMS_PER_PAGE - 1);
 
