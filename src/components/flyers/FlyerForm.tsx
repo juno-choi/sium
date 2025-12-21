@@ -5,11 +5,9 @@ import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import ImageUpload from '@/components/ImageUpload';
 import { FlyerFormData, AppleTemplateData } from '@/types/flyer';
-import { generateFlyerHTML } from '@/lib/flyer-template';
 import { useToast } from '@/components/ui/Toast';
 import { ArrowLeft, Save, Loader2, X } from 'lucide-react';
 import Image from 'next/image';
-import { uploadHTMLToStorage } from '@/lib/storage/html-storage';
 
 interface FlyerFormProps {
     mode: 'create' | 'edit';
@@ -132,16 +130,6 @@ export default function FlyerForm({ mode, initialData, flyerId, onSuccess }: Fly
                 throw new Error('로그인이 필요합니다.');
             }
 
-            // Generate HTML
-            const htmlContent = generateFlyerHTML(
-                templateId,
-                templateId === 'apple' ? appleData : {
-                    title: formData.title,
-                    description: formData.description,
-                    imageUrls: formData.imageUrls,
-                }
-            );
-
             const thumbnailUrl = templateId === 'apple'
                 ? (appleData.juiceSale.imageUrl || appleData.appleImageUrl || null)
                 : (formData.imageUrls[0] || null);
@@ -157,32 +145,17 @@ export default function FlyerForm({ mode, initialData, flyerId, onSuccess }: Fly
                 title: formData.title,
                 description: formData.description,
                 image_url: thumbnailUrl,
-                html_content: htmlContent, // 백업용 유지
                 template_id: templateId,
                 form_data: dbFormData,
                 user_id: user.id,
             };
 
             if (mode === 'create') {
-                const { data: flyer, error: insertError } = await supabase
+                const { error: insertError } = await supabase
                     .from('flyers')
-                    .insert(flyerPayload)
-                    .select('uuid')
-                    .single();
+                    .insert(flyerPayload);
 
                 if (insertError) throw insertError;
-
-                const { success, url } = await uploadHTMLToStorage({
-                    flyerUuid: flyer.uuid,
-                    htmlContent,
-                });
-
-                if (success && url) {
-                    await supabase
-                        .from('flyers')
-                        .update({ html_url: url })
-                        .eq('uuid', flyer.uuid);
-                }
 
                 showToast('success', '전단지가 성공적으로 생성되었습니다!');
                 router.push('/flyers');
@@ -192,29 +165,10 @@ export default function FlyerForm({ mode, initialData, flyerId, onSuccess }: Fly
 
                 const { error: updateError } = await supabase
                     .from('flyers')
-                    .update({
-                        title: formData.title,
-                        description: formData.description,
-                        image_url: thumbnailUrl,
-                        html_content: htmlContent,
-                        template_id: templateId,
-                        form_data: dbFormData,
-                    })
+                    .update(flyerPayload)
                     .eq('uuid', flyerId);
 
                 if (updateError) throw updateError;
-
-                const { success, url } = await uploadHTMLToStorage({
-                    flyerUuid: flyerId,
-                    htmlContent,
-                });
-
-                if (success && url) {
-                    await supabase
-                        .from('flyers')
-                        .update({ html_url: url })
-                        .eq('uuid', flyerId);
-                }
 
                 showToast('success', '전단지가 수정되었습니다.');
                 onSuccess?.();

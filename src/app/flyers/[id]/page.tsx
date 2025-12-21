@@ -5,6 +5,7 @@ import { DeleteFlyerButton } from '@/components/flyers/DeleteFlyerButton';
 import { ShareButton } from '@/components/flyers/ShareButton';
 import { User, Calendar, Edit, ArrowLeft, ExternalLink } from 'lucide-react';
 import { fetchHTMLFromStorage } from '@/lib/storage/html-storage';
+import { generateFlyerHTML } from '@/lib/flyer-template';
 
 interface PageProps {
     params: Promise<{ id: string }>;
@@ -33,9 +34,11 @@ export default async function FlyerDetailPage({ params }: PageProps) {
     const { data: { user } } = await supabase.auth.getUser();
     const isOwner = user?.id === flyer.user_id;
 
-    // HTML 내용 가져오기 (Storage 우선, DB 폴백)
+    // HTML 내용 가져오기 (form_data 우선, Storage/DB 폴백)
     let htmlContent = '';
-    if (flyer.html_url) {
+    if (flyer.form_data) {
+        htmlContent = generateFlyerHTML(flyer.template_id, flyer.form_data);
+    } else if (flyer.html_url) {
         htmlContent = await fetchHTMLFromStorage(flyer.html_url) || '';
     }
 

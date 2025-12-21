@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { notFound } from 'next/navigation';
 import { fetchHTMLFromStorage } from '@/lib/storage/html-storage';
+import { generateFlyerHTML } from '@/lib/flyer-template';
 import { Metadata } from 'next';
 
 interface PageProps {
@@ -60,9 +61,11 @@ export default async function PublicFlyerViewerPage({ params }: PageProps) {
         notFound();
     }
 
-    // 2. HTML 콘텐츠 로딩 (Storage 우선, DB 폴백)
+    // 2. HTML 콘텐츠 로딩 (form_data 우선, Storage/DB 폴백)
     let htmlContent = '';
-    if (flyer.html_url) {
+    if (flyer.form_data) {
+        htmlContent = generateFlyerHTML(flyer.template_id, flyer.form_data);
+    } else if (flyer.html_url) {
         htmlContent = await fetchHTMLFromStorage(flyer.html_url) || '';
     }
 
