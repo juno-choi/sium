@@ -4,21 +4,22 @@ import { Share2, Check } from 'lucide-react';
 import { useState } from 'react';
 import { useToast } from '@/components/ui/Toast';
 
-export function ShareButton({ title }: { title: string }) {
+export function ShareButton({ title, userUuid, flyerUuid }: { title: string; userUuid: string; flyerUuid: string }) {
     const [copied, setCopied] = useState(false);
     const { showToast } = useToast();
 
     const handleShare = async () => {
         try {
-            const url = window.location.href;
+            const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
+            const shareUrl = `${baseUrl}/${userUuid}/${flyerUuid}`;
 
             if (navigator.share) {
                 await navigator.share({
                     title,
-                    url,
+                    url: shareUrl,
                 });
             } else {
-                await navigator.clipboard.writeText(url);
+                await navigator.clipboard.writeText(shareUrl);
                 setCopied(true);
                 showToast('success', '링크가 복사되었습니다!');
                 setTimeout(() => setCopied(false), 2000);

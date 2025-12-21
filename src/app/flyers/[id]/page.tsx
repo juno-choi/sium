@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { DeleteFlyerButton } from '@/components/flyers/DeleteFlyerButton';
 import { ShareButton } from '@/components/flyers/ShareButton';
-import { User, Calendar, Edit, ArrowLeft } from 'lucide-react';
+import { User, Calendar, Edit, ArrowLeft, ExternalLink } from 'lucide-react';
 import { fetchHTMLFromStorage } from '@/lib/storage/html-storage';
 
 interface PageProps {
@@ -89,7 +89,17 @@ export default async function FlyerDetailPage({ params }: PageProps) {
                         </div>
 
                         <div className="flex items-center gap-2 mt-4 md:mt-0">
-                            <ShareButton title={flyer.title} />
+                            <Link href={`/${flyer.user_id}/${flyer.uuid}`} target="_blank">
+                                <button className="flex items-center space-x-2 px-4 py-2 bg-brand-50 text-brand-600 border border-brand-100 rounded-lg hover:bg-brand-100 transition-colors">
+                                    <ExternalLink className="w-4 h-4" />
+                                    <span>공유 페이지 보기</span>
+                                </button>
+                            </Link>
+                            <ShareButton
+                                title={flyer.title}
+                                userUuid={flyer.user_id}
+                                flyerUuid={flyer.uuid}
+                            />
                             {isOwner && (
                                 <>
                                     <Link href={`/flyers/${resolvedParams.id}/edit`}>
