@@ -65,3 +65,30 @@ create policy "Users can update own flyers."
 create policy "Users can delete own flyers."
   on public.flyers for delete
   using ( auth.uid() = user_id );
+
+-- Add html_content to flyers table
+alter table public.flyers
+  add column if not exists html_content text;
+
+-- Storage Bucket Setup (Update public status if exists)
+insert into storage.buckets (id, name, public)
+values ('flyers', 'flyers', true)
+on conflict (id) do update set public = true;
+
+-- Storage Policies
+create policy "Authenticated users can upload flyer images"
+on storage.objects for insert
+to authenticated
+with check ( bucket_id = 'flyers' );
+
+create policy "Anyone can view flyer images"
+on storage.objects for select
+using ( bucket_id = 'flyers' );
+
+create policy "Users can delete own flyer images"
+on storage.objects for delete
+to authenticated
+using (
+  bucket_id = 'flyers' AND
+  owner = auth.uid()
+);
