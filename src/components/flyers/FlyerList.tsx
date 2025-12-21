@@ -1,5 +1,7 @@
 import { Flyer } from '@/types/flyer';
 import { FlyerCard } from './FlyerCard';
+import { FlyerListSkeleton } from '@/components/ui/Skeleton';
+import { EmptyState } from '@/components/ui/EmptyState';
 
 interface FlyerListProps {
     flyers: Flyer[];
@@ -8,19 +10,17 @@ interface FlyerListProps {
 
 export function FlyerList({ flyers, isLoading }: FlyerListProps) {
     if (isLoading) {
-        return (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-4">
-                {[...Array(6)].map((_, i) => (
-                    <div key={i} className="animate-pulse border rounded-lg h-72 bg-gray-100"></div>
-                ))}
-            </div>
-        );
+        return <FlyerListSkeleton />;
+    }
+
+    if (!flyers || flyers.length === 0) {
+        return <EmptyState />;
     }
 
     return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 animate-fade-in">
             {flyers.map((flyer) => (
-                <FlyerCard key={flyer.id} flyer={flyer} />
+                <FlyerCard key={flyer.uuid} flyer={flyer} />
             ))}
         </div>
     );

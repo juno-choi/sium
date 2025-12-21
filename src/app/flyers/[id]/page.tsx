@@ -2,6 +2,8 @@ import { createClient } from '@/lib/supabase/server';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { DeleteFlyerButton } from '@/components/flyers/DeleteFlyerButton';
+import { ShareButton } from '@/components/flyers/ShareButton';
+import { User, Calendar, Edit, ArrowLeft } from 'lucide-react';
 
 interface PageProps {
     params: Promise<{ id: string }>;
@@ -29,42 +31,73 @@ export default async function FlyerDetailPage({ params }: PageProps) {
 
     const { data: { user } } = await supabase.auth.getUser();
     const isOwner = user?.id === flyer.user_id;
+    const formattedDate = new Date(flyer.created_at).toLocaleDateString('ko-KR', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
 
     return (
-        <div className="container mx-auto px-4 py-8 max-w-4xl">
-            <header className="mb-8 border-b pb-4">
-                <div className="flex justify-between items-start mb-4">
-                    <h1 className="text-3xl font-bold">{flyer.title}</h1>
-                    <div className="flex gap-2">
-                        {isOwner && (
-                            <>
-                                <Link href={`/flyers/${resolvedParams.id}/edit`}>
-                                    <button className="px-4 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors text-sm">
-                                        수정
-                                    </button>
-                                </Link>
-                                <DeleteFlyerButton flyerId={resolvedParams.id} />
-                            </>
-                        )}
-                        <Link href="/flyers">
-                            <button className="px-4 py-2 text-gray-500 hover:text-gray-700 transition-colors text-sm">
-                                목록으로
-                            </button>
-                        </Link>
+        <article className="min-h-screen bg-gray-50 py-12">
+            <div className="container mx-auto px-4">
+                {/* Navigation */}
+                <div className="max-w-4xl mx-auto mb-6">
+                    <Link href="/flyers" className="inline-flex items-center text-gray-500 hover:text-brand-600 transition-colors">
+                        <ArrowLeft className="w-4 h-4 mr-1" />
+                        목록으로 돌아가기
+                    </Link>
+                </div>
+
+                {/* Header Card */}
+                <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-sm border border-gray-100 p-8 mb-8">
+                    <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-6">
+                        <div>
+                            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 leading-tight">
+                                {flyer.title}
+                            </h1>
+                            <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
+                                <div className="flex items-center bg-gray-50 px-3 py-1 rounded-full">
+                                    <User className="w-4 h-4 mr-2 text-brand-500" />
+                                    <span className="font-medium text-gray-700">{flyer.users?.full_name || '익명'}</span>
+                                </div>
+                                <div className="flex items-center">
+                                    <Calendar className="w-4 h-4 mr-2 text-gray-400" />
+                                    <time dateTime={flyer.created_at}>{formattedDate}</time>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center gap-2 mt-4 md:mt-0">
+                            <ShareButton title={flyer.title} />
+                            {isOwner && (
+                                <>
+                                    <Link href={`/flyers/${resolvedParams.id}/edit`}>
+                                        <button className="flex items-center space-x-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 hover:border-gray-300 transition-colors">
+                                            <Edit className="w-4 h-4" />
+                                            <span>수정</span>
+                                        </button>
+                                    </Link>
+                                    <DeleteFlyerButton flyerId={resolvedParams.id} />
+                                </>
+                            )}
+                        </div>
                     </div>
+
+                    {flyer.description && (
+                        <div className="bg-gray-50 rounded-xl p-6 text-gray-700 leading-relaxed border border-gray-100">
+                            {flyer.description}
+                        </div>
+                    )}
                 </div>
 
-                <div className="flex items-center text-gray-600 text-sm">
-                    <span className="font-semibold mr-2">{flyer.users?.full_name || '익명'}</span>
-                    <span className="mx-2">|</span>
-                    <span>{new Date(flyer.created_at).toLocaleString()}</span>
-                </div>
-            </header>
-
-            <div
-                className="flyer-content prose max-w-none"
-                dangerouslySetInnerHTML={{ __html: flyer.html_content }}
-            />
-        </div>
+                {/* Content Body */}
+                <div
+                    className="max-w-4xl mx-auto bg-white rounded-2xl shadow-sm border border-gray-100 p-8 md:p-12 prose prose-lg prose-headings:text-gray-900 prose-p:text-gray-700 prose-a:text-brand-600 hover:prose-a:text-brand-700 prose-img:rounded-xl prose-img:shadow-md max-w-none"
+                    dangerouslySetInnerHTML={{ __html: flyer.html_content }}
+                />
+            </div>
+        </article>
     );
 }

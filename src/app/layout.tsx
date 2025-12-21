@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
-import '@/styles/flyer.css';
+
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -19,19 +19,29 @@ export const metadata: Metadata = {
 };
 
 import Header from '@/components/Header';
+import { createClient } from '@/lib/supabase/server';
 
 // ... (existing imports)
 
-export default function RootLayout({
+import { ToastProvider } from '@/components/ui/Toast';
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <Header />
-        {children}
+        <ToastProvider>
+          <Header user={user} />
+          {children}
+        </ToastProvider>
       </body>
     </html>
   );
