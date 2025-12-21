@@ -79,5 +79,6 @@ export interface AppleTemplateData {
         quantity: string;
     }>;
     appleImageUrl?: string;
+    purchaseUrl?: string;
 }
 

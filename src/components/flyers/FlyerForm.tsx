@@ -57,7 +57,8 @@ const DEFAULT_APPLE_DATA: AppleTemplateData = {
         bank: '농협',
         number: '000-0000-0000-00',
         owner: '홍길동',
-    }
+    },
+    purchaseUrl: ''
 };
 
 export default function FlyerForm({ mode, initialData, flyerId, onSuccess }: FlyerFormProps) {
@@ -506,6 +507,16 @@ export default function FlyerForm({ mode, initialData, flyerId, onSuccess }: Fly
                                     type="text"
                                     value={appleData.shippingFee}
                                     onChange={(e) => setAppleData({ ...appleData, shippingFee: e.target.value })}
+                                    className="w-full px-3 py-2 border rounded-lg"
+                                />
+                            </div>
+                            <div className="space-y-1">
+                                <label className="text-xs font-semibold text-gray-500">구매 링크 (네이버스토어, 구글폼 등)</label>
+                                <input
+                                    type="url"
+                                    placeholder="https://..."
+                                    value={appleData.purchaseUrl || ''}
+                                    onChange={(e) => setAppleData({ ...appleData, purchaseUrl: e.target.value })}
                                     className="w-full px-3 py-2 border rounded-lg"
                                 />
                             </div>

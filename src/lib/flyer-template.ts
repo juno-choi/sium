@@ -47,7 +47,7 @@ export function generateBasicTemplateHTML(params: GenerateHTMLParams): string {
 }
 
 export function generateAppleTemplateHTML(data: AppleTemplateData): string {
-    const { juiceSale, table5kg, table10kg, contacts, varieties, orderInstruction, shippingFee, account, appleImageUrl } = data;
+    const { juiceSale, table5kg, table10kg, contacts, varieties, orderInstruction, shippingFee, account, appleImageUrl, purchaseUrl } = data;
 
     const renderPriceTable = (title: string, items: typeof table5kg, headerClass: string) => `
         <div class="apple-card price-table-card">
@@ -118,6 +118,15 @@ export function generateAppleTemplateHTML(data: AppleTemplateData): string {
         <div class="apple-bottom-section">
             ${renderPriceTable('과수(10KG)', table10kg, 'bg-green')}
         </div>
+
+        <!-- 구매하기 버튼 -->
+        ${purchaseUrl ? `
+            <div class="apple-action-area">
+                <a href="${escapeHtml(purchaseUrl)}" target="_blank" class="buy-button">
+                    🍎 지금 바로 구매하기
+                </a>
+            </div>
+        ` : ''}
 
         <div class="apple-footer">
             Powered by Sium
@@ -280,6 +289,29 @@ export function generateAppleTemplateHTML(data: AppleTemplateData): string {
 
         .account-number { font-size: 16px; font-weight: 900; margin-bottom: 2px; }
         .account-details { font-size: 12px; font-weight: 700; color: #666; }
+
+        .apple-action-area {
+            text-align: center;
+            margin: 32px 0;
+        }
+
+        .buy-button {
+            display: inline-block;
+            background-color: var(--apple-red);
+            color: white;
+            padding: 16px 48px;
+            font-size: 20px;
+            font-weight: 900;
+            text-decoration: none;
+            border-radius: 99px;
+            box-shadow: 0 10px 15px -3px rgba(220, 38, 38, 0.3);
+            transition: transform 0.2s, background-color 0.2s;
+        }
+
+        .buy-button:hover {
+            background-color: #B91C1C;
+            transform: translateY(-2px);
+        }
 
         .apple-footer {
             margin-top: 32px;
