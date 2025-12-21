@@ -13,11 +13,11 @@
   - [x] `flyers` 테이블 생성
 
 ## 3단계: 인증 구현 (Google OAuth)
-- [ ] Supabase Auth + Google OAuth Provider 설정
-- [ ] 로그인 페이지 구현
-- [ ] 로그아웃 기능 구현
-- [ ] 인증 상태 관리 (Context 또는 zustand 도입 검토)
-- [ ] 미들웨어(Middleware)를 이용한 보호된 라우트 처리
+- [x] Supabase Auth + Google OAuth Provider 설정
+- [x] 로그인 페이지 구현
+- [x] 로그아웃 기능 구현
+- [x] 인증 상태 관리 (Server Component + UserMenu)
+- [x] 미들웨어(Middleware)를 이용한 보호된 라우트 처리
 
 ## 4단계: 파일 업로드 기능
 - [ ] Supabase Storage 버킷 생성 (`flyers`)
