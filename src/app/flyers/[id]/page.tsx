@@ -123,7 +123,11 @@ export default async function FlyerDetailPage({ params }: PageProps) {
 
                 {/* Content Body */}
                 <div
-                    className="max-w-4xl mx-auto bg-white rounded-2xl shadow-sm border border-gray-100 p-8 md:p-12 prose prose-lg prose-headings:text-gray-900 prose-p:text-gray-700 prose-a:text-brand-600 hover:prose-a:text-brand-700 prose-img:rounded-xl prose-img:shadow-md max-w-none"
+                    className={
+                        flyer.template_id === 'apple'
+                            ? "max-w-4xl mx-auto"
+                            : "max-w-4xl mx-auto bg-white rounded-2xl shadow-sm border border-gray-100 p-8 md:p-12 prose prose-lg prose-headings:text-gray-900 prose-p:text-gray-700 prose-a:text-brand-600 hover:prose-a:text-brand-700 prose-img:rounded-xl prose-img:shadow-md max-w-none"
+                    }
                     dangerouslySetInnerHTML={{ __html: htmlContent }}
                 />
             </div>

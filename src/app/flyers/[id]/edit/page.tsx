@@ -38,6 +38,8 @@ export default async function EditFlyerPage({ params }: PageProps) {
                     title: flyer.title,
                     description: flyer.description || '',
                     imageUrls,
+                    templateId: flyer.template_id,
+                    formData: flyer.form_data,
                 }}
             />
         </div>

@@ -48,3 +48,36 @@ export interface UpdateFlyerData {
     html_url?: string;
     html_content?: string;
 }
+
+export interface AppleTemplateData {
+    juiceSale: {
+        productName: string;
+        price: string;
+        shippingNote: string;
+        imageUrl?: string;
+    };
+    table5kg: Array<{
+        range: string;
+        price: string;
+        quantity: string;
+    }>;
+    contacts: Array<{
+        name: string;
+        phone: string;
+    }>;
+    varieties: string;
+    orderInstruction: string;
+    shippingFee: string;
+    account: {
+        bank: string;
+        number: string;
+        owner: string;
+    };
+    table10kg: Array<{
+        range: string;
+        price: string;
+        quantity: string;
+    }>;
+    appleImageUrl?: string;
+}
+
