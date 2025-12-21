@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
+import { deleteHTMLFromStorage } from '@/lib/storage/html-storage';
 
 import { Trash2, Loader2 } from 'lucide-react';
 import { useToast } from '@/components/ui/Toast';
@@ -32,6 +33,9 @@ export function DeleteFlyerButton({ flyerId }: DeleteFlyerButtonProps) {
                 .eq('uuid', flyerId);
 
             if (error) throw error;
+
+            // Storage에서도 HTML 파일 삭제 (비동기로 진행하되 실패해도 큰 문제는 없음)
+            await deleteHTMLFromStorage(flyerId);
 
             showToast('success', '전단지가 삭제되었습니다.');
             router.push('/flyers');

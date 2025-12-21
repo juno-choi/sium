@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { DeleteFlyerButton } from '@/components/flyers/DeleteFlyerButton';
 import { ShareButton } from '@/components/flyers/ShareButton';
 import { User, Calendar, Edit, ArrowLeft } from 'lucide-react';
+import { fetchHTMLFromStorage } from '@/lib/storage/html-storage';
 
 interface PageProps {
     params: Promise<{ id: string }>;
@@ -31,6 +32,17 @@ export default async function FlyerDetailPage({ params }: PageProps) {
 
     const { data: { user } } = await supabase.auth.getUser();
     const isOwner = user?.id === flyer.user_id;
+
+    // HTML 내용 가져오기 (Storage 우선, DB 폴백)
+    let htmlContent = '';
+    if (flyer.html_url) {
+        htmlContent = await fetchHTMLFromStorage(flyer.html_url) || '';
+    }
+
+    if (!htmlContent && flyer.html_content) {
+        htmlContent = flyer.html_content;
+    }
+
     const formattedDate = new Date(flyer.created_at).toLocaleDateString('ko-KR', {
         year: 'numeric',
         month: 'long',
@@ -54,9 +66,16 @@ export default async function FlyerDetailPage({ params }: PageProps) {
                 <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-sm border border-gray-100 p-8 mb-8">
                     <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-6">
                         <div>
-                            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 leading-tight">
-                                {flyer.title}
-                            </h1>
+                            <div className="flex items-center gap-2 mb-2">
+                                <h1 className="text-3xl md:text-4xl font-bold text-gray-900 leading-tight">
+                                    {flyer.title}
+                                </h1>
+                                {flyer.template_id !== 'basic' && (
+                                    <span className="px-2 py-0.5 bg-brand-50 text-brand-600 text-xs font-semibold rounded-full border border-brand-100 uppercase">
+                                        {flyer.template_id}
+                                    </span>
+                                )}
+                            </div>
                             <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
                                 <div className="flex items-center bg-gray-50 px-3 py-1 rounded-full">
                                     <User className="w-4 h-4 mr-2 text-brand-500" />
@@ -95,7 +114,7 @@ export default async function FlyerDetailPage({ params }: PageProps) {
                 {/* Content Body */}
                 <div
                     className="max-w-4xl mx-auto bg-white rounded-2xl shadow-sm border border-gray-100 p-8 md:p-12 prose prose-lg prose-headings:text-gray-900 prose-p:text-gray-700 prose-a:text-brand-600 hover:prose-a:text-brand-700 prose-img:rounded-xl prose-img:shadow-md max-w-none"
-                    dangerouslySetInnerHTML={{ __html: flyer.html_content }}
+                    dangerouslySetInnerHTML={{ __html: htmlContent }}
                 />
             </div>
         </article>

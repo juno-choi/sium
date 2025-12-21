@@ -39,12 +39,25 @@ create table public.flyers (
   uuid uuid default uuid_generate_v4() not null unique,
   title text not null,
   description text,
-  image_url text,
-  html_content text, -- HTML content of the flyer
-  user_id uuid references public.users(uuid) on delete cascade not null, -- Added ON DELETE CASCADE
+  image_url text, -- Thumbnail
+  
+  -- Template System
+  template_id text not null default 'basic', -- 'basic', 'event', 'sale', 'notice' 등
+  form_data jsonb not null default '{}'::jsonb, -- Original form data
+  
+  -- Rendering Result
+  html_url text, -- URL to HTML file in Storage
+  html_content text, -- HTML content (for backward compatibility/backup)
+  
+  user_id uuid references public.users(uuid) on delete cascade not null,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
   updated_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
+
+-- Indices for Flyers
+create index if not exists flyers_template_id_idx on public.flyers(template_id);
+create index if not exists flyers_form_data_idx on public.flyers using gin(form_data);
+create index if not exists flyers_user_id_idx on public.flyers(user_id);
 
 -- Enable RLS on flyers
 alter table public.flyers enable row level security;

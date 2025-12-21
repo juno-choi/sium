@@ -8,8 +8,8 @@ import { FlyerFormData } from '@/types/flyer';
 import { generateFlyerHTML } from '@/lib/flyer-template';
 import { useToast } from '@/components/ui/Toast';
 import { ArrowLeft, Save, Loader2, X } from 'lucide-react';
-
 import Image from 'next/image';
+import { uploadHTMLToStorage } from '@/lib/storage/html-storage';
 
 interface FlyerFormProps {
     mode: 'create' | 'edit';
@@ -87,16 +87,44 @@ export default function FlyerForm({ mode, initialData, flyerId, onSuccess }: Fly
 
             const thumbnailUrl = formData.imageUrls[0] || null;
 
+            // Prepare Form Data for JSONB
+            const dbFormData = {
+                title: formData.title,
+                description: formData.description,
+                imageUrls: formData.imageUrls,
+            };
+
             if (mode === 'create') {
-                const { error: insertError } = await supabase.from('flyers').insert({
-                    title: formData.title,
-                    description: formData.description,
-                    image_url: thumbnailUrl,
-                    html_content: htmlContent,
-                    user_id: user.id,
-                });
+                // Insert into DB (to get uuid)
+                const { data: flyer, error: insertError } = await supabase
+                    .from('flyers')
+                    .insert({
+                        title: formData.title,
+                        description: formData.description,
+                        image_url: thumbnailUrl,
+                        html_content: htmlContent, // 백업용 유지
+                        template_id: 'basic',
+                        form_data: dbFormData,
+                        user_id: user.id,
+                    })
+                    .select('uuid')
+                    .single();
 
                 if (insertError) throw insertError;
+
+                // Upload HTML to Storage
+                const { success, url } = await uploadHTMLToStorage({
+                    flyerUuid: flyer.uuid,
+                    htmlContent,
+                });
+
+                if (success && url) {
+                    // Update DB with html_url
+                    await supabase
+                        .from('flyers')
+                        .update({ html_url: url })
+                        .eq('uuid', flyer.uuid);
+                }
 
                 showToast('success', '전단지가 성공적으로 생성되었습니다!');
                 router.push('/flyers');
@@ -104,17 +132,34 @@ export default function FlyerForm({ mode, initialData, flyerId, onSuccess }: Fly
             } else {
                 if (!flyerId) throw new Error('수정할 전단지 ID가 없습니다.');
 
+                // Update DB
                 const { error: updateError } = await supabase
                     .from('flyers')
                     .update({
                         title: formData.title,
                         description: formData.description,
                         image_url: thumbnailUrl,
-                        html_content: htmlContent,
+                        html_content: htmlContent, // 백업용 유지
+                        template_id: 'basic',
+                        form_data: dbFormData,
                     })
                     .eq('uuid', flyerId);
 
                 if (updateError) throw updateError;
+
+                // Upload HTML to Storage (Upsert)
+                const { success, url } = await uploadHTMLToStorage({
+                    flyerUuid: flyerId,
+                    htmlContent,
+                });
+
+                if (success && url) {
+                    // Update DB with html_url
+                    await supabase
+                        .from('flyers')
+                        .update({ html_url: url })
+                        .eq('uuid', flyerId);
+                }
 
                 showToast('success', '전단지가 수정되었습니다.');
                 onSuccess?.();
