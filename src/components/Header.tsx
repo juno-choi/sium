@@ -2,10 +2,10 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { User, LogOut, Menu, X, LayoutGrid } from 'lucide-react';
+import { User, LogOut, Menu, X, LayoutDashboard, PlusCircle, Settings } from 'lucide-react';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 import { createClient } from '@/lib/supabase/client';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 
 interface HeaderProps {
     user: SupabaseUser | null;
@@ -15,6 +15,7 @@ export default function Header({ user }: HeaderProps) {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
     const router = useRouter();
+    const pathname = usePathname();
 
     const handleLogout = async () => {
         const supabase = createClient();
@@ -23,53 +24,79 @@ export default function Header({ user }: HeaderProps) {
         router.refresh();
     };
 
+    const navItems = [
+        { name: '대시보드', href: '/dashboard', icon: LayoutDashboard },
+        { name: '습관 관리', href: '/habits', icon: Settings },
+    ];
+
     return (
-        <header className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
+        <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200">
             <div className="container mx-auto px-4">
                 <div className="flex items-center justify-between h-16">
                     {/* Logo */}
-                    <Link href="/" className="flex items-center space-x-2">
-                        <span className="text-xl font-bold text-gray-900">
-                            Sium
+                    <Link href="/" className="flex items-center space-x-2 group">
+                        <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center transform group-hover:rotate-12 transition-transform">
+                            <span className="text-white font-black text-xl leading-none">H</span>
+                        </div>
+                        <span className="text-xl font-bold text-slate-900 font-display">
+                            HabitQuest
                         </span>
                     </Link>
 
                     {/* Desktop Navigation */}
-                    <nav className="hidden md:flex items-center space-x-4">
+                    <nav className="hidden md:flex items-center space-x-1">
                         {user ? (
                             <>
-                                <Link
-                                    href="/flyers"
-                                    className="flex items-center space-x-2 px-4 py-2 bg-brand-500 text-white rounded-lg hover:bg-brand-600 transition"
-                                >
-                                    <LayoutGrid className="w-4 h-4" />
-                                    <span>전단지 목록</span>
-                                </Link>
+                                {navItems.map((item) => {
+                                    const Icon = item.icon;
+                                    const isActive = pathname === item.href;
+                                    return (
+                                        <Link
+                                            key={item.href}
+                                            href={item.href}
+                                            className={`flex items-center space-x-2 px-4 py-2 rounded-xl transition ${isActive
+                                                    ? 'bg-indigo-50 text-indigo-600 font-bold'
+                                                    : 'text-slate-600 hover:bg-slate-50'
+                                                }`}
+                                        >
+                                            <Icon className="w-4 h-4" />
+                                            <span>{item.name}</span>
+                                        </Link>
+                                    );
+                                })}
+
+                                <div className="w-px h-6 bg-slate-200 mx-2" />
 
                                 {/* Profile Dropdown */}
                                 <div className="relative">
                                     <button
                                         onClick={() => setIsProfileOpen(!isProfileOpen)}
-                                        aria-label="사용자 메뉴"
-                                        aria-expanded={isProfileOpen}
-                                        className="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition"
+                                        className="flex items-center space-x-2 px-3 py-2 rounded-xl hover:bg-slate-50 transition border border-transparent hover:border-slate-200"
                                     >
-                                        <User className="w-5 h-5" />
-                                        <span className="text-sm">{user.email}</span>
+                                        <div className="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center">
+                                            <User className="w-5 h-5 text-slate-600" />
+                                        </div>
+                                        <span className="text-sm font-medium text-slate-700 hidden lg:block">
+                                            {user.email?.split('@')[0]}
+                                        </span>
                                     </button>
 
                                     {isProfileOpen && (
-                                        <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1">
+                                        <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-slate-200 py-2 animate-in fade-in slide-in-from-top-2 duration-200">
+                                            <div className="px-4 py-2 border-b border-slate-100 mb-1">
+                                                <p className="text-xs text-slate-500 truncate">{user.email}</p>
+                                            </div>
                                             <Link
-                                                href="/flyers/new"
-                                                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                                                href="/habits/new"
+                                                className="flex items-center space-x-2 px-4 py-2 text-sm text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 transition"
                                                 onClick={() => setIsProfileOpen(false)}
                                             >
-                                                새 전단지 작성
+                                                <PlusCircle className="w-4 h-4" />
+                                                <span>새 습관 추가</span>
                                             </Link>
                                             <button
                                                 onClick={handleLogout}
-                                                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-2"
+                                                className="w-full text-left px-4 py-2 text-sm text-rose-600 hover:bg-rose-50 flex items-center space-x-2 transition"
                                             >
                                                 <LogOut className="w-4 h-4" />
                                                 <span>로그아웃</span>
@@ -81,19 +108,17 @@ export default function Header({ user }: HeaderProps) {
                         ) : (
                             <Link
                                 href="/login"
-                                className="px-4 py-2 bg-brand-500 text-white rounded-lg hover:bg-brand-600 transition"
+                                className="px-6 py-2 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition shadow-lg shadow-indigo-100 font-bold"
                             >
-                                로그인
+                                시작하기
                             </Link>
                         )}
                     </nav>
 
                     {/* Mobile Menu Button */}
                     <button
-                        className="md:hidden p-2 text-gray-600 hover:text-brand-600 transition"
+                        className="md:hidden p-2 text-slate-600 hover:text-indigo-600 transition"
                         onClick={() => setIsMenuOpen(!isMenuOpen)}
-                        aria-label={isMenuOpen ? "메뉴 닫기" : "메뉴 열기"}
-                        aria-expanded={isMenuOpen}
                     >
                         {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
                     </button>
@@ -101,53 +126,74 @@ export default function Header({ user }: HeaderProps) {
 
                 {/* Mobile Menu */}
                 {isMenuOpen && (
-                    <div className="md:hidden border-t border-gray-200 py-4 animate-slide-up">
-                        <nav className="flex flex-col space-y-4">
-                            {user ? (
-                                <>
+                    <div className="md:hidden border-t border-slate-100 py-4 pb-6 space-y-4">
+                        {user ? (
+                            <>
+                                <div className="grid grid-cols-2 gap-2 px-2">
+                                    {navItems.map((item) => {
+                                        const Icon = item.icon;
+                                        const isActive = pathname === item.href;
+                                        return (
+                                            <Link
+                                                key={item.href}
+                                                href={item.href}
+                                                className={`flex flex-col items-center justify-center p-4 rounded-2xl transition ${isActive
+                                                    ? 'bg-indigo-50 text-indigo-600 border border-indigo-100'
+                                                    : 'bg-slate-50 text-slate-600 border border-transparent'
+                                                    }`}
+                                                onClick={() => setIsMenuOpen(false)}
+                                            >
+                                                <Icon className="w-6 h-6 mb-2" />
+                                                <span className="text-xs font-bold">{item.name}</span>
+                                            </Link>
+                                        );
+                                    })}
+                                </div>
+                                <div className="px-4 py-2">
                                     <Link
-                                        href="/flyers"
-                                        className="flex items-center space-x-2 px-4 py-2 text-brand-600 font-medium"
+                                        href="/habits/new"
+                                        className="flex items-center justify-center space-x-2 w-full py-3 bg-indigo-600 text-white rounded-2xl font-bold"
                                         onClick={() => setIsMenuOpen(false)}
                                     >
-                                        <LayoutGrid className="w-5 h-5" />
-                                        <span>전단지 목록</span>
+                                        <PlusCircle className="w-5 h-5" />
+                                        <span>새 습관 추가</span>
                                     </Link>
-                                    <Link
-                                        href="/flyers/new"
-                                        className="px-4 py-2 text-gray-700 hover:bg-gray-50"
-                                        onClick={() => setIsMenuOpen(false)}
-                                    >
-                                        새 전단지 작성
-                                    </Link>
-                                    <div className="border-t border-gray-100 my-2"></div>
-                                    <div className="px-4 py-2 text-sm text-gray-500">
-                                        {user.email}
+                                </div>
+                                <div className="border-t border-slate-100 pt-4 flex items-center justify-between px-4">
+                                    <div className="flex items-center space-x-2">
+                                        <div className="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center">
+                                            <User className="w-4 h-4 text-slate-500" />
+                                        </div>
+                                        <span className="text-sm font-medium text-slate-600 truncate max-w-[150px]">
+                                            {user.email}
+                                        </span>
                                     </div>
                                     <button
                                         onClick={() => {
                                             handleLogout();
                                             setIsMenuOpen(false);
                                         }}
-                                        className="flex items-center space-x-2 px-4 py-2 text-gray-700 hover:bg-gray-50 w-full text-left"
+                                        className="p-2 text-rose-500 hover:bg-rose-50 rounded-lg transition"
                                     >
                                         <LogOut className="w-5 h-5" />
-                                        <span>로그아웃</span>
                                     </button>
-                                </>
-                            ) : (
+                                </div>
+                            </>
+                        ) : (
+                            <div className="px-4">
                                 <Link
                                     href="/login"
-                                    className="block px-4 py-2 bg-brand-500 text-white rounded-lg text-center"
+                                    className="block w-full py-4 bg-indigo-600 text-white rounded-2xl text-center font-bold"
                                     onClick={() => setIsMenuOpen(false)}
                                 >
-                                    로그인
+                                    로그인하고 시작하기
                                 </Link>
-                            )}
-                        </nav>
+                            </div>
+                        )}
                     </div>
                 )}
             </div>
         </header>
     );
 }
+

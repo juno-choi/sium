@@ -1,17 +1,8 @@
 @import 'tailwindcss';
 
-
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-
+  --font-display: 'Outfit', 'Inter', sans-serif;
+  
   --color-brand-50: #eef2ff;
   --color-brand-100: #e0e7ff;
   --color-brand-200: #c7d2fe;
@@ -23,101 +14,50 @@
   --color-brand-800: #3730a3;
   --color-brand-900: #312e81;
 
-  --animate-fade-in: fadeIn 0.3s ease-in-out;
-  --animate-slide-up: slideUp 0.3s ease-out;
-  --animate-skeleton: skeleton 1.5s ease-in-out infinite;
+  --animate-fade-in: fadeIn 0.5s ease-out;
+  --animate-slide-up: slideUp 0.4s ease-out;
+  --animate-float: float 3s ease-in-out infinite;
+  --animate-shimmer: shimmer 2s linear infinite;
 
   @keyframes fadeIn {
-    0% {
-      opacity: 0;
-    }
-
-    100% {
-      opacity: 1;
-    }
+    from { opacity: 0; }
+    to { opacity: 1; }
   }
 
   @keyframes slideUp {
-    0% {
-      transform: translateY(10px);
+    from {
+      transform: translateY(20px);
       opacity: 0;
     }
-
-    100% {
+    to {
       transform: translateY(0);
       opacity: 1;
     }
   }
 
-  @keyframes skeleton {
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
 
-    0%,
-    100% {
-      opacity: 1;
-    }
-
-    50% {
-      opacity: 0.5;
-    }
+  @keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
   }
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+:root {
+  --background: #f8fafc;
+  --foreground: #0f172a;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* Flyer Content Styles */
-.flyer-content {
-  color: #1a1a1a;
-}
-
-.flyer-content img {
-  max-width: 100%;
-  height: auto;
-  margin: 1.5rem 0;
-  border-radius: 0.75rem;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-}
-
-.flyer-content h1 {
-  font-size: 2.25rem;
-  font-weight: 800;
-  color: #111827;
-  margin-top: 2rem;
-  margin-bottom: 1rem;
-  line-height: 1.2;
-}
-
-.flyer-content h2 {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #1f2937;
-  margin-top: 1.5rem;
-  margin-bottom: 0.75rem;
-}
-
-.flyer-content p {
-  font-size: 1.125rem;
-  line-height: 1.75;
-  color: #374151;
-  margin-bottom: 1.25rem;
-}
-
-.flyer-content ul,
-.flyer-content ol {
-  margin-bottom: 1.25rem;
-  padding-left: 1.5rem;
-}
-
-.flyer-content li {
-  margin-bottom: 0.5rem;
+.font-display {
+  font-family: var(--font-display);
 }

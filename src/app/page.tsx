@@ -1,62 +1,56 @@
 import { createClient } from '@/lib/supabase/server';
 import Link from 'next/link';
-import Image from 'next/image';
-import { Layout, Upload, Share2, PlusCircle, ArrowRight, Zap, CheckCircle } from 'lucide-react';
+import { Gamepad2, CheckCircle2, Trophy, Sparkles, ArrowRight, Target, Zap } from 'lucide-react';
 
 export default async function LandingPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-slate-50">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-brand-50 via-white to-brand-50 pt-20 pb-32">
+      <section className="relative overflow-hidden pt-20 pb-32">
         <div className="container mx-auto px-4 relative z-10">
           <div className="text-center max-w-4xl mx-auto">
-            <div className="inline-flex items-center rounded-full bg-brand-100 px-4 py-1.5 mb-8">
-              <span className="flex h-2 w-2 rounded-full bg-brand-600 mr-2"></span>
-              <span className="text-sm font-semibold text-brand-700">누구나 무료로 시작하세요</span>
+            <div className="inline-flex items-center rounded-full bg-indigo-100 px-4 py-1.5 mb-8">
+              <span className="flex h-2 w-2 rounded-full bg-indigo-600 mr-2"></span>
+              <span className="text-sm font-semibold text-indigo-700 font-display">습관 형성의 새로운 즐거움</span>
             </div>
-            <h1 className="text-5xl md:text-7xl font-extrabold text-gray-900 tracking-tight leading-tight mb-8 animate-fade-in">
-              나만의 <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-indigo-500">전단지</span>를<br />
-              <span className="relative inline-block">
-                1분 만에
-                <svg className="absolute w-full h-3 -bottom-1 left-0 text-brand-200 -z-10" viewBox="0 0 100 10" preserveAspectRatio="none">
-                  <path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="8" fill="none" />
-                </svg>
+            <h1 className="text-5xl md:text-7xl font-extrabold text-slate-900 tracking-tight leading-tight mb-8 animate-fade-in font-display">
+              귀여운 캐릭터와 함께<br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-violet-500">
+                성장하는 습관
               </span>
-              완성하세요
             </h1>
 
-            <p className="text-xl text-gray-600 mb-10 max-w-2xl mx-auto leading-relaxed">
-              복잡한 디자인 툴 없이도, 이미지만 업로드하면 전문가 수준의 웹 전단지가 자동으로 만들어집니다.
-              링크 하나로 전 세계와 공유해보세요.
+            <p className="text-xl text-slate-600 mb-10 max-w-2xl mx-auto leading-relaxed">
+              매일의 작은 할 일을 완료하고 캐릭터를 키워보세요.
+              지루한 체크리스트가 즐거운 모험으로 변합니다.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               {user ? (
                 <Link
-                  href="/flyers"
-                  className="inline-flex items-center px-8 py-4 bg-brand-600 text-white text-lg font-bold rounded-xl hover:bg-brand-700 transition shadow-lg hover:shadow-brand-200/50 hover:-translate-y-1 transform duration-200"
+                  href="/dashboard"
+                  className="inline-flex items-center px-8 py-4 bg-indigo-600 text-white text-lg font-bold rounded-2xl hover:bg-indigo-700 transition shadow-lg shadow-indigo-200 hover:-translate-y-1 transform duration-200"
                 >
-                  <Layout className="mr-2 w-5 h-5" />
-                  내 전단지 관리
+                  <Gamepad2 className="mr-2 w-5 h-5" />
+                  퀘스트 시작하기
                 </Link>
               ) : (
                 <>
                   <Link
                     href="/login"
-                    className="inline-flex items-center px-8 py-4 bg-brand-600 text-white text-lg font-bold rounded-xl hover:bg-brand-700 transition shadow-lg hover:shadow-brand-200/50 hover:-translate-y-1 transform duration-200 w-full sm:w-auto justify-center"
+                    className="inline-flex items-center px-8 py-4 bg-indigo-600 text-white text-lg font-bold rounded-2xl hover:bg-indigo-700 transition shadow-lg shadow-indigo-200 hover:-translate-y-1 transform duration-200 w-full sm:w-auto justify-center"
                   >
-                    <PlusCircle className="mr-2 w-5 h-5" />
-                    지금 시작하기
+                    무료로 시작하기
                     <ArrowRight className="ml-2 w-4 h-4" />
                   </Link>
                   <Link
-                    href="/flyers" // In reality, this might redirect to login because of auth protection on /flyers, but keeping as 'Explore' link or verify logic
-                    className="inline-flex items-center px-8 py-4 bg-white text-gray-700 text-lg font-bold rounded-xl border border-gray-200 hover:bg-gray-50 hover:border-gray-300 transition shadow-sm hover:-translate-y-1 transform duration-200 w-full sm:w-auto justify-center"
+                    href="#features"
+                    className="inline-flex items-center px-8 py-4 bg-white text-slate-700 text-lg font-bold rounded-2xl border border-slate-200 hover:bg-slate-50 hover:border-slate-300 transition shadow-sm hover:-translate-y-1 transform duration-200 w-full sm:w-auto justify-center"
                   >
-                    둘러보기
+                    더 알아보기
                   </Link>
                 </>
               )}
@@ -66,87 +60,104 @@ export default async function LandingPage() {
 
         {/* Background Decorations */}
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none -z-0">
-          <div className="absolute -top-[20%] -left-[10%] w-[50%] h-[50%] bg-brand-200/20 rounded-full blur-3xl"></div>
-          <div className="absolute top-[40%] -right-[10%] w-[40%] h-[60%] bg-indigo-200/20 rounded-full blur-3xl"></div>
+          <div className="absolute -top-[20%] -left-[10%] w-[50%] h-[50%] bg-indigo-200/20 rounded-full blur-3xl"></div>
+          <div className="absolute top-[40%] -right-[10%] w-[40%] h-[60%] bg-violet-200/20 rounded-full blur-3xl"></div>
         </div>
       </section>
 
       {/* Features Section */}
-      <section className="py-24 bg-white">
+      <section id="features" className="py-24 bg-white">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">왜 Sium인가요?</h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              가장 쉽고 빠른 전단지 제작 경험을 제공합니다.
+          <div className="text-center mb-20">
+            <h2 className="text-3xl font-bold text-slate-900 mb-4 font-display">왜 HabitQuest 인가요?</h2>
+            <p className="text-slate-600 max-w-2xl mx-auto">
+              습관 형성이 어려운 이유는 즐거움이 없기 때문입니다.
+              HabitQuest는 당신의 성취를 시각화하고 보상합니다.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-12 max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
             <FeatureCard
-              icon={<Upload className="w-8 h-8 text-white" />}
-              title="간편한 이미지 업로드"
-              description="드래그 앤 드롭으로 이미지를 올리기만 하세요. 복잡한 설정은 필요 없습니다."
-              color="bg-blue-500"
+              icon={<Sparkles className="w-8 h-8 text-white" />}
+              title="귀여운 캐릭터 진화"
+              description="경험치를 쌓아 캐릭터를 성장시키세요. 레벨이 오를수록 외형이 변화합니다."
+              color="bg-amber-400"
             />
             <FeatureCard
-              icon={<Zap className="w-8 h-8 text-white" />}
-              title="자동 레이아웃 생성"
-              description="업로드한 콘텐츠에 맞춰 최적의 레이아웃이 자동으로 적용됩니다."
-              color="bg-brand-500"
+              icon={<Target className="w-8 h-8 text-white" />}
+              title="맞춤형 습관 설정"
+              description="난이도와 요일을 설정하여 나만의 퀘스트를 만드세요."
+              color="bg-indigo-500"
             />
             <FeatureCard
-              icon={<Share2 className="w-8 h-8 text-white" />}
-              title="쉬운 공유"
-              description="생성된 고유 링크로 카카오톡, 문자, SNS 어디든 쉽게 공유하세요."
-              color="bg-purple-500"
+              icon={<Trophy className="w-8 h-8 text-white" />}
+              title="확실한 보상 체계"
+              description="할 일을 완료할 때마다 얻는 XP로 성취감을 즉각적으로 느껴보세요."
+              color="bg-rose-500"
             />
           </div>
         </div>
       </section>
 
-      {/* Steps Section */}
-      <section className="py-24 bg-gray-50 border-t border-gray-100">
+      {/* Preview Section */}
+      <section className="py-24 bg-slate-50 border-t border-slate-100">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-2 gap-16 items-center max-w-6xl mx-auto">
             <div>
-              <h2 className="text-3xl font-bold text-gray-900 mb-6">
-                3단계로 완성하는<br />
-                나만의 전단지
+              <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-8 font-display">
+                작은 실천이<br />
+                커다란 성장이 됩니다.
               </h2>
-              <div className="space-y-8">
-                <StepItem number="01" title="로그인하기" description="구글 계정으로 3초 만에 시작하세요." />
-                <StepItem number="02" title="내용 작성" description="제목, 설명과 함께 이미지를 업로드하세요." />
-                <StepItem number="03" title="공유하기" description="완성된 전단지 링크를 필요한 곳에 전달하세요." />
+              <div className="space-y-6">
+                <StepItem
+                  icon={<CheckCircle2 className="w-6 h-6 text-emerald-500" />}
+                  title="일일 퀘스트 완료"
+                  description="오늘 할 일을 'Clear' 하고 경험치를 획득하세요."
+                />
+                <StepItem
+                  icon={<Zap className="w-6 h-6 text-amber-500" />}
+                  title="능력치 상승"
+                  description="캐릭터의 레벨이 올라가며 새로운 모습을 발견하세요."
+                />
+                <StepItem
+                  icon={<Gamepad2 className="w-6 h-6 text-indigo-500" />}
+                  title="즐거운 습관 형성"
+                  description="더 이상 의무가 아닌 즐거움으로 습관을 지속하세요."
+                />
               </div>
             </div>
             <div className="relative">
-              <div className="aspect-[4/3] bg-white rounded-2xl shadow-xl border border-gray-100 flex items-center justify-center p-8 relative z-10">
-                <div className="space-y-4 w-full opacity-50 blur-[1px]">
-                  <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                  <div className="h-32 bg-gray-100 rounded w-full"></div>
-                  <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+              <div className="aspect-square bg-white rounded-3xl shadow-2xl border border-slate-100 flex flex-col items-center justify-center p-12 relative z-10 overflow-hidden">
+                <div className="w-48 h-48 bg-indigo-50 rounded-full flex items-center justify-center mb-8 relative">
+                  <span className="text-8-xl">🐱</span>
+                  <div className="absolute -bottom-2 w-3/4 h-4 bg-slate-200 blur-md rounded-full -z-10"></div>
                 </div>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="bg-brand-600 text-white px-6 py-3 rounded-lg shadow-lg font-bold flex items-center animate-bounce">
-                    <CheckCircle className="w-5 h-5 mr-2" />
-                    완성!
+                <div className="w-full space-y-4">
+                  <div className="flex justify-between items-end mb-1">
+                    <span className="text-sm font-bold text-slate-700">Lv. 5 푸딩이</span>
+                    <span className="text-xs font-medium text-slate-500">450 / 500 XP</span>
+                  </div>
+                  <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
+                    <div className="w-[90%] h-full bg-gradient-to-r from-indigo-500 to-violet-500 rounded-full"></div>
                   </div>
                 </div>
+                {/* Floating XP decoration */}
+                <div className="absolute top-1/4 right-1/4 animate-bounce delay-100 italic font-black text-indigo-600">+20 XP ✨</div>
               </div>
-              <div className="absolute -bottom-6 -right-6 w-full h-full bg-brand-100 rounded-2xl -z-0"></div>
+              <div className="absolute -bottom-6 -right-6 w-full h-full bg-indigo-100 rounded-3xl -z-0"></div>
             </div>
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-white border-t border-gray-100 py-12">
-        <div className="container mx-auto px-4 text-center ">
+      <footer className="bg-white border-t border-slate-100 py-12">
+        <div className="container mx-auto px-4 text-center">
           <div className="flex items-center justify-center space-x-2 mb-4">
-            <span className="text-xl font-bold text-gray-900">Sium</span>
+            <span className="text-xl font-bold text-slate-900 font-display">HabitQuest</span>
           </div>
-          <p className="text-gray-500 text-sm">
-            © 2025 Sium. All rights reserved.
+          <p className="text-slate-500 text-sm">
+            © 2025 HabitQuest. All rights reserved.
           </p>
         </div>
       </footer>
@@ -156,26 +167,27 @@ export default async function LandingPage() {
 
 function FeatureCard({ icon, title, description, color }: { icon: React.ReactNode, title: string, description: string, color: string }) {
   return (
-    <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
-      <div className={`w-16 h-16 ${color} rounded-2xl flex items-center justify-center mb-6 shadow-lg rotate-3`}>
+    <div className="bg-white p-8 rounded-3xl border border-slate-50 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
+      <div className={`w-16 h-16 ${color} rounded-2xl flex items-center justify-center mb-6 shadow-lg transform -rotate-3 hover:rotate-0 transition-transform`}>
         {icon}
       </div>
-      <h3 className="text-xl font-bold text-gray-900 mb-3">{title}</h3>
-      <p className="text-gray-600 leading-relaxed">{description}</p>
+      <h3 className="text-xl font-bold text-slate-900 mb-3 font-display">{title}</h3>
+      <p className="text-slate-600 leading-relaxed text-sm md:text-base">{description}</p>
     </div>
   );
 }
 
-function StepItem({ number, title, description }: { number: string, title: string, description: string }) {
+function StepItem({ icon, title, description }: { icon: React.ReactNode, title: string, description: string }) {
   return (
-    <div className="flex">
-      <div className="mr-6">
-        <span className="text-4xl font-black text-brand-100">{number}</span>
+    <div className="flex items-start">
+      <div className="mr-4 p-2 bg-white rounded-xl shadow-sm border border-slate-100">
+        {icon}
       </div>
       <div>
-        <h4 className="text-lg font-bold text-gray-900 mb-1">{title}</h4>
-        <p className="text-gray-600">{description}</p>
+        <h4 className="text-lg font-bold text-slate-900 mb-1">{title}</h4>
+        <p className="text-slate-600 text-sm">{description}</p>
       </div>
     </div>
   )
 }
+
