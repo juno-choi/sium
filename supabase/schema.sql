@@ -2,13 +2,16 @@
 create extension if not exists "uuid-ossp";
 
 -- Reset (Drop existing tables if they exist)
+drop table if exists public.user_equipment;
+drop table if exists public.equipment_items;
+drop table if exists public.customization_options;
 drop table if exists public.habit_logs;
 drop table if exists public.habits;
 drop table if exists public.user_characters;
 drop table if exists public.character_evolutions;
 drop table if exists public.characters;
 drop table if exists public.flyers; -- Old table
--- Keeping public.users as it syncs with auth.users
+drop type if exists habit_difficulty;
 
 -- 1. Users table (Public profile) - Mirroring Supabase Auth
 create table if not exists public.users (
@@ -22,51 +25,36 @@ create table if not exists public.users (
 );
 
 alter table public.users enable row level security;
+create policy "Public profiles are viewable by everyone." on public.users for select using (true);
+create policy "Users can insert their own profile." on public.users for insert with check (auth.uid() = uuid);
+create policy "Users can update own profile." on public.users for update using (auth.uid() = uuid);
 
--- Policies for users
-create policy "Public profiles are viewable by everyone."
-  on public.users for select
-  using ( true );
-
-create policy "Users can insert their own profile."
-  on public.users for insert
-  with check ( auth.uid() = uuid );
-
-create policy "Users can update own profile."
-  on public.users for update
-  using ( auth.uid() = uuid );
-
--- 2. Characters Master Table
+-- 2. Characters Master Table (Humanoid focus)
 create table public.characters (
   id serial primary key,
   name varchar(50) not null,
   description text,
-  base_image_url varchar(255), -- Or Emoji
+  base_image_url varchar(255), -- "human_male", "human_female" etc.
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
 alter table public.characters enable row level security;
 create policy "Characters are viewable by everyone." on public.characters for select using (true);
 
--- 3. Character Evolutions
-create table public.character_evolutions (
-  id serial primary key,
-  character_id int references public.characters(id) on delete cascade not null,
-  level_required int not null,
-  image_url varchar(255) not null,
-  evolution_name varchar(50)
-);
-
-alter table public.character_evolutions enable row level security;
-create policy "Evolutions are viewable by everyone." on public.character_evolutions for select using (true);
-
--- 4. User Characters (Selected character and progress)
+-- 3. User Characters (Selected character, progress, gold, and appearance)
 create table public.user_characters (
   id uuid default uuid_generate_v4() primary key,
   user_id uuid references auth.users(id) on delete cascade not null unique,
   character_id int references public.characters(id) not null,
   current_xp int default 0 not null,
   current_level int default 1 not null,
+  gold int default 0 not null,
+  
+  -- Customization
+  hair_style varchar(50) default 'plain' not null,
+  face_shape varchar(50) default 'smiling' not null,
+  skin_color varchar(20) default '#FFDAB9' not null,
+  
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
   updated_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
@@ -76,7 +64,48 @@ create policy "Users can view own character progress." on public.user_characters
 create policy "Users can choose their character." on public.user_characters for insert with check (auth.uid() = user_id);
 create policy "Users can update own character progress." on public.user_characters for update using (auth.uid() = user_id);
 
--- 5. Habits Table
+-- 4. Equipment Items Master
+create table public.equipment_items (
+  id serial primary key,
+  name varchar(100) not null,
+  slot varchar(30) not null, -- 'hat', 'top', 'bottom', 'shoes', 'gloves', 'face_accessory'
+  image_url varchar(255),
+  price int not null default 0,
+  description text,
+  rarity varchar(20) default 'common' not null,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+alter table public.equipment_items enable row level security;
+create policy "Equipment is viewable by everyone." on public.equipment_items for select using (true);
+
+-- 5. User Owned Equipment
+create table public.user_equipment (
+  id uuid default uuid_generate_v4() primary key,
+  user_id uuid references auth.users(id) on delete cascade not null,
+  item_id int references public.equipment_items(id) not null,
+  is_equipped boolean default false not null,
+  purchased_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  unique(user_id, item_id)
+);
+
+alter table public.user_equipment enable row level security;
+create policy "Users can view/manage own equipment." on public.user_equipment for all using (auth.uid() = user_id);
+
+-- 6. Customization Options Master
+create table public.customization_options (
+  id serial primary key,
+  category varchar(20) not null, -- 'hair', 'face', 'skin'
+  name varchar(50) not null,
+  value varchar(100) not null,
+  price int default 0 not null,
+  is_default boolean default false not null
+);
+
+alter table public.customization_options enable row level security;
+create policy "Options viewable by everyone." on public.customization_options for select using (true);
+
+-- 7. Habits Table
 create type habit_difficulty as enum ('easy', 'normal', 'hard');
 
 create table public.habits (
@@ -100,39 +129,48 @@ create table public.habits (
 alter table public.habits enable row level security;
 create policy "Users can manage own habits." on public.habits for all using (auth.uid() = user_id);
 
--- 6. Habit Logs (History of completions)
+-- 8. Habit Logs (Now with Gold tracking)
 create table public.habit_logs (
   id uuid default uuid_generate_v4() primary key,
   habit_id uuid references public.habits(id) on delete cascade not null,
   user_id uuid references auth.users(id) on delete cascade not null,
   completed_date date default current_date not null,
   xp_earned int not null,
+  gold_earned int default 0 not null,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
-  unique(habit_id, completed_date) -- Prevent multiple clears for same habit on same day
+  unique(habit_id, completed_date)
 );
 
 alter table public.habit_logs enable row level security;
-create policy "Users can view/insert own logs." on public.habit_logs for all using (auth.uid() = user_id);
+create policy "Users can view/insert/delete own logs." on public.habit_logs for all using (auth.uid() = user_id);
 
--- 7. Initial Character Data
+-- 9. Initial Seed Data
 insert into public.characters (name, description, base_image_url) values
-('푸딩이', '온순하고 느긋한 성격의 젤리 캐릭터입니다.', '🐱'),
-('코코', '활발하고 에너지 넘치는 강아지 캐릭터입니다.', '🐶'),
-('모찌', '수줍음이 많지만 다정한 토끼 캐릭터입니다.', '🐰');
+('전사', '강인한 체력과 용기를 가진 모험가입니다.', '🧑‍🚀'),
+('마법사', '신비로운 마력을 사용하는 지혜로운 탐구자입니다.', '🧙'),
+('궁수', '날렵한 몸놀림으로 목표를 꿰뚫는 사냥꾼입니다.', '🧝');
 
--- Initial Evolutions (Example)
-insert into public.character_evolutions (character_id, level_required, image_url, evolution_name) values
-(1, 1, '🐱', '아기 푸딩이'),
-(1, 5, '🐈', '청년 푸딩이'),
-(1, 10, '🦁', '황제 푸딩이'),
-(2, 1, '🐶', '아기 코코'),
-(2, 5, '🐕', '청년 코코'),
-(2, 10, '🐺', '대장 코코'),
-(3, 1, '🐰', '아기 모찌'),
-(3, 5, '🐇', '청년 모찌'),
-(3, 10, '🦄', '전설의 모찌');
+-- Basic Equipment Items
+insert into public.equipment_items (name, slot, price, rarity, description, image_url) values
+('낡은 가죽 모자', 'hat', 100, 'common', '햇볕을 가려주는 평범한 가죽 모자입니다.', '👒'),
+('수련용 갑옷', 'top', 300, 'common', '기본적인 방어력을 갖춘 수련용 상의입니다.', '👕'),
+('튼튼한 바지', 'bottom', 200, 'common', '거친 모험에도 끄떡없는 바지입니다.', '👖'),
+('모험가의 장화', 'shoes', 150, 'common', '오래 걸어도 발이 편안한 장화입니다.', '👞'),
+('가죽 장갑', 'gloves', 100, 'common', '손을 보호해주는 튼튼한 가죽 장갑입니다.', '🧤'),
+('멋진 안경', 'face_accessory', 500, 'rare', '지적인 느낌을 주는 금테 안경입니다.', '👓');
 
--- 8. Functions & Triggers for User Sync (Keeping these from old schema)
+-- Customization Options
+insert into public.customization_options (category, name, value, price, is_default) values
+('hair', '숏컷', 'short', 0, true),
+('hair', '롱헤어', 'long', 500, false),
+('hair', '모히칸', 'mohawk', 800, false),
+('face', '웃는 얼굴', 'smiling', 0, true),
+('face', '진지한 얼굴', 'serious', 300, false),
+('skin', '살구색', '#FFDAB9', 0, true),
+('skin', '흰 피부', '#FFFFFF', 1000, false),
+('skin', '그을린 피부', '#D2B48C', 500, false);
+
+-- 10. Functions & Triggers (Sync users)
 create or replace function public.handle_new_user()
 returns trigger as $$
 begin
@@ -140,69 +178,14 @@ begin
   values (
     new.id,
     new.email,
-    coalesce(
-      new.raw_user_meta_data->>'full_name',
-      new.raw_user_meta_data->>'name',
-      ''
-    ),
+    coalesce(new.raw_user_meta_data->>'full_name', new.raw_user_meta_data->>'name', ''),
     new.raw_user_meta_data->>'avatar_url'
   )
   on conflict (uuid) do update
-  set
-    email = excluded.email,
-    full_name = excluded.full_name,
-    avatar_url = excluded.avatar_url,
-    updated_at = now();
+  set email = excluded.email, full_name = excluded.full_name, avatar_url = excluded.avatar_url, updated_at = now();
   return new;
 end;
 $$ language plpgsql security definer;
 
-create or replace function public.handle_user_update()
-returns trigger as $$
-begin
-  update public.users
-  set
-    email = new.email,
-    full_name = coalesce(
-      new.raw_user_meta_data->>'full_name',
-      new.raw_user_meta_data->>'name',
-      full_name
-    ),
-    avatar_url = coalesce(
-      new.raw_user_meta_data->>'avatar_url',
-      avatar_url
-    ),
-    updated_at = now()
-  where uuid = new.id;
-  return new;
-end;
-$$ language plpgsql security definer;
-
-create or replace function public.handle_user_delete()
-returns trigger as $$
-begin
-  delete from public.users where uuid = old.id;
-  return old;
-end;
-$$ language plpgsql security definer;
-
--- Triggers
 drop trigger if exists on_auth_user_created on auth.users;
-create trigger on_auth_user_created
-  after insert on auth.users
-  for each row execute procedure public.handle_new_user();
-
-drop trigger if exists on_auth_user_updated on auth.users;
-create trigger on_auth_user_updated
-  after update on auth.users
-  for each row
-  when (
-    old.email is distinct from new.email OR
-    old.raw_user_meta_data is distinct from new.raw_user_meta_data
-  )
-  execute procedure public.handle_user_update();
-
-drop trigger if exists on_auth_user_deleted on auth.users;
-create trigger on_auth_user_deleted
-  after delete on auth.users
-  for each row execute procedure public.handle_user_delete();
+create trigger on_auth_user_created after insert on auth.users for each row execute procedure public.handle_new_user();

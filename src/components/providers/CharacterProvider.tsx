@@ -10,7 +10,9 @@ interface CharacterContextType {
     loading: boolean;
     error: string | null;
     selectCharacter: (characterId: number) => Promise<UserCharacter>;
-    addXP: (amount: number) => Promise<{ data: UserCharacter; leveledUp: boolean }>;
+    addRewards: (xp: number, gold: number) => Promise<{ data: UserCharacter; leveledUp: boolean }>;
+    removeRewards: (xp: number, gold: number) => Promise<{ data: UserCharacter }>;
+    updateAppearance: (appearance: Partial<Pick<UserCharacter, 'hair_style' | 'face_shape' | 'skin_color'>>) => Promise<UserCharacter>;
     refresh: () => Promise<void>;
 }
 
@@ -47,7 +49,7 @@ export function CharacterProvider({ children }: { children: React.ReactNode }) {
 
             const { data, error } = await supabase
                 .from('user_characters')
-                .select('*, character:characters(*, evolutions:character_evolutions(*))')
+                .select('*, character:characters(*)')
                 .eq('user_id', user.id)
                 .single();
 
@@ -72,8 +74,12 @@ export function CharacterProvider({ children }: { children: React.ReactNode }) {
                     character_id: characterId,
                     current_xp: 0,
                     current_level: 1,
+                    gold: 0,
+                    hair_style: 'short',
+                    face_shape: 'smiling',
+                    skin_color: '#FFDAB9',
                 })
-                .select('*, character:characters(*, evolutions:character_evolutions(*))')
+                .select('*, character:characters(*)')
                 .single();
 
             if (error) throw error;
@@ -85,11 +91,12 @@ export function CharacterProvider({ children }: { children: React.ReactNode }) {
         }
     };
 
-    const addXP = async (amount: number) => {
+    const addRewards = async (xp: number, gold: number) => {
         if (!character) throw new Error('No character selected');
 
         try {
-            const newXP = character.current_xp + amount;
+            const newXP = character.current_xp + xp;
+            const newGold = character.gold + gold;
             const nextLevelThreshold = character.current_level * 100;
             let newLevel = character.current_level;
             let finalXP = newXP;
@@ -104,15 +111,76 @@ export function CharacterProvider({ children }: { children: React.ReactNode }) {
                 .update({
                     current_xp: finalXP,
                     current_level: newLevel,
+                    gold: newGold,
                     updated_at: new Date().toISOString(),
                 })
                 .eq('id', character.id)
-                .select('*, character:characters(*, evolutions:character_evolutions(*))')
+                .select('*, character:characters(*)')
                 .single();
 
             if (error) throw error;
             setCharacter(data);
             return { data, leveledUp: newLevel > character.current_level };
+        } catch (err: any) {
+            setError(err.message);
+            throw err;
+        }
+    };
+
+    const removeRewards = async (xp: number, gold: number) => {
+        if (!character) throw new Error('No character selected');
+
+        try {
+            let finalXP = character.current_xp - xp;
+            let finalLevel = character.current_level;
+            let finalGold = Math.max(0, character.gold - gold);
+
+            if (finalXP < 0 && finalLevel > 1) {
+                finalLevel -= 1;
+                const prevLevelThreshold = finalLevel * 100;
+                finalXP = prevLevelThreshold + finalXP;
+            } else if (finalXP < 0) {
+                finalXP = 0;
+            }
+
+            const { data, error } = await supabase
+                .from('user_characters')
+                .update({
+                    current_xp: finalXP,
+                    current_level: finalLevel,
+                    gold: finalGold,
+                    updated_at: new Date().toISOString(),
+                })
+                .eq('id', character.id)
+                .select('*, character:characters(*)')
+                .single();
+
+            if (error) throw error;
+            setCharacter(data);
+            return { data };
+        } catch (err: any) {
+            setError(err.message);
+            throw err;
+        }
+    };
+
+    const updateAppearance = async (appearance: Partial<Pick<UserCharacter, 'hair_style' | 'face_shape' | 'skin_color'>>) => {
+        if (!character) throw new Error('No character selected');
+
+        try {
+            const { data, error } = await supabase
+                .from('user_characters')
+                .update({
+                    ...appearance,
+                    updated_at: new Date().toISOString(),
+                })
+                .eq('id', character.id)
+                .select('*, character:characters(*)')
+                .single();
+
+            if (error) throw error;
+            setCharacter(data);
+            return data;
         } catch (err: any) {
             setError(err.message);
             throw err;
@@ -132,7 +200,9 @@ export function CharacterProvider({ children }: { children: React.ReactNode }) {
                 loading,
                 error,
                 selectCharacter,
-                addXP,
+                addRewards,
+                removeRewards,
+                updateAppearance,
                 refresh: fetchUserCharacter,
             }}
         >

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { TodoItem } from '@/types/todo';
+import { HabitDifficulty, HabitLog } from '@/types/habit';
 import { useCharacter } from './useCharacter';
 
 export function useTodoList() {
@@ -10,7 +11,7 @@ export function useTodoList() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const supabase = createClient();
-    const { addXP } = useCharacter();
+    const { addRewards, removeRewards } = useCharacter();
 
     const fetchTodos = async () => {
         try {
@@ -58,16 +59,19 @@ export function useTodoList() {
         }
     };
 
-    const clearHabit = async (habitId: string, difficulty: string) => {
+    const clearHabit = async (habitId: string, difficulty: HabitDifficulty) => {
         try {
             const { data: { user } } = await supabase.auth.getUser();
             if (!user) throw new Error('Not authenticated');
 
             const dateStr = new Date().toISOString().split('T')[0];
 
-            // Calculate XP
-            const xpTable: Record<string, number> = { easy: 10, normal: 20, hard: 35 };
-            const xpEarned = xpTable[difficulty] || 20;
+            // Rewards (Updated values from plan)
+            const xpTable: Record<HabitDifficulty, number> = { easy: 10, normal: 20, hard: 35 };
+            const goldTable: Record<HabitDifficulty, number> = { easy: 100, normal: 200, hard: 350 };
+
+            const xpEarned = xpTable[difficulty];
+            const goldEarned = goldTable[difficulty];
 
             // 1. Create habit log
             const { error: logError } = await supabase
@@ -77,24 +81,65 @@ export function useTodoList() {
                     user_id: user.id,
                     completed_date: dateStr,
                     xp_earned: xpEarned,
+                    gold_earned: goldEarned,
                 });
 
             if (logError) throw logError;
 
-            // 2. Add XP to character
-            await addXP(xpEarned);
+            // 2. Add rewards to character
+            await addRewards(xpEarned, goldEarned);
 
             // 3. Update local state
             setTodos(todos.map(todo =>
                 todo.id === habitId ? { ...todo, is_completed: true } : todo
             ));
 
-            return { success: true, xpEarned };
+            return { success: true, xpEarned, goldEarned };
         } catch (err: any) {
             setError(err.message);
             throw err;
         }
     };
+
+    const unclearHabit = async (habitId: string) => {
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) throw new Error('Not authenticated');
+
+            const dateStr = new Date().toISOString().split('T')[0];
+
+            // 1. Fetch the log to know how much to subtract
+            const { data: log, error: fetchError } = await supabase
+                .from('habit_logs')
+                .select('*')
+                .eq('habit_id', habitId)
+                .eq('completed_date', dateStr)
+                .single();
+
+            if (fetchError) throw fetchError;
+
+            // 2. Delete the log
+            const { error: deleteError } = await supabase
+                .from('habit_logs')
+                .delete()
+                .eq('id', log.id);
+
+            if (deleteError) throw deleteError;
+
+            // 3. Remove rewards from character
+            await removeRewards(log.xp_earned, log.gold_earned);
+
+            // 4. Update local state
+            setTodos(todos.map(todo =>
+                todo.id === habitId ? { ...todo, is_completed: false } : todo
+            ));
+
+            return { success: true };
+        } catch (err: any) {
+            setError(err.message);
+            throw err;
+        }
+    }
 
     useEffect(() => {
         fetchTodos();
@@ -105,6 +150,7 @@ export function useTodoList() {
         loading,
         error,
         clearHabit,
+        unclearHabit,
         refresh: fetchTodos
     };
 }

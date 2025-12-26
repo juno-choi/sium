@@ -24,5 +24,7 @@ export interface HabitLog {
     user_id: string;
     completed_date: string;
     xp_earned: number;
+    gold_earned: number;
     created_at: string;
 }
+

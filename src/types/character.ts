@@ -4,15 +4,6 @@ export interface Character {
     description: string;
     base_image_url: string;
     created_at: string;
-    evolutions?: CharacterEvolution[];
-}
-
-export interface CharacterEvolution {
-    id: number;
-    character_id: number;
-    level_required: number;
-    image_url: string;
-    evolution_name: string;
 }
 
 export interface UserCharacter {
@@ -21,9 +12,25 @@ export interface UserCharacter {
     character_id: number;
     current_xp: number;
     current_level: number;
+    gold: number;
+
+    // Customization
+    hair_style: string;
+    face_shape: string;
+    skin_color: string;
+
     created_at: string;
     updated_at: string;
 
     // Joined fields
     character?: Character;
+}
+
+export interface CustomizationOption {
+    id: number;
+    category: 'hair' | 'face' | 'skin';
+    name: string;
+    value: string;
+    price: number;
+    is_default: boolean;
 }

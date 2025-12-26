@@ -2,10 +2,14 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { User, LogOut, Menu, X, Sword, PlusCircle, BookPlus } from 'lucide-react';
+import {
+    User, LogOut, Menu, X, Sword, PlusCircle, BookPlus,
+    ShoppingBag, Palette, Coins
+} from 'lucide-react';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter, usePathname } from 'next/navigation';
+import { useCharacter } from '@/lib/hooks/useCharacter';
 
 interface HeaderProps {
     user: SupabaseUser | null;
@@ -16,6 +20,7 @@ export default function Header({ user }: HeaderProps) {
     const [isProfileOpen, setIsProfileOpen] = useState(false);
     const router = useRouter();
     const pathname = usePathname();
+    const { character } = useCharacter();
 
     const handleLogout = async () => {
         const supabase = createClient();
@@ -27,6 +32,7 @@ export default function Header({ user }: HeaderProps) {
     const navItems = [
         { name: '모험하기', href: '/dashboard', icon: Sword },
         { name: '퀘스트 관리', href: '/habits', icon: BookPlus },
+        { name: '상점', href: '/shop', icon: ShoppingBag },
     ];
 
     return (
@@ -35,7 +41,7 @@ export default function Header({ user }: HeaderProps) {
                 <div className="flex items-center justify-between h-16">
                     {/* Logo */}
                     <Link href="/" className="flex items-center space-x-2 group">
-                        <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center transform group-hover:rotate-12 transition-transform">
+                        <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center transform group-hover:rotate-12 transition-transform shadow-lg shadow-indigo-100">
                             <span className="text-white font-black text-xl leading-none">S</span>
                         </div>
                         <span className="text-xl font-bold text-slate-900 font-display">
@@ -55,8 +61,8 @@ export default function Header({ user }: HeaderProps) {
                                             key={item.href}
                                             href={item.href}
                                             className={`flex items-center space-x-2 px-4 py-2 rounded-xl transition ${isActive
-                                                ? 'bg-indigo-50 text-indigo-600 font-bold'
-                                                : 'text-slate-600 hover:bg-slate-50'
+                                                    ? 'bg-indigo-50 text-indigo-600 font-bold'
+                                                    : 'text-slate-600 hover:bg-slate-50'
                                                 }`}
                                         >
                                             <Icon className="w-4 h-4" />
@@ -66,6 +72,16 @@ export default function Header({ user }: HeaderProps) {
                                 })}
 
                                 <div className="w-px h-6 bg-slate-200 mx-2" />
+
+                                {/* Gold Display in Header */}
+                                {character && (
+                                    <div className="flex items-center space-x-1.5 px-3 py-1.5 bg-amber-50 rounded-xl border border-amber-100 mr-2">
+                                        <Coins className="w-4 h-4 text-amber-500" />
+                                        <span className="text-sm font-black text-amber-700 font-display">
+                                            {character.gold.toLocaleString()}
+                                        </span>
+                                    </div>
+                                )}
 
                                 {/* Profile Dropdown */}
                                 <div className="relative">
@@ -86,6 +102,14 @@ export default function Header({ user }: HeaderProps) {
                                             <div className="px-4 py-2 border-b border-slate-100 mb-1">
                                                 <p className="text-xs text-slate-500 truncate">{user.email}</p>
                                             </div>
+                                            <Link
+                                                href="/character"
+                                                className="flex items-center space-x-2 px-4 py-2 text-sm text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 transition"
+                                                onClick={() => setIsProfileOpen(false)}
+                                            >
+                                                <Palette className="w-4 h-4" />
+                                                <span>캐릭터 꾸미기</span>
+                                            </Link>
                                             <Link
                                                 href="/habits/new"
                                                 className="flex items-center space-x-2 px-4 py-2 text-sm text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 transition"
@@ -129,7 +153,18 @@ export default function Header({ user }: HeaderProps) {
                     <div className="md:hidden border-t border-slate-100 py-4 pb-6 space-y-4">
                         {user ? (
                             <>
-                                <div className="grid grid-cols-2 gap-2 px-2">
+                                {character && (
+                                    <div className="flex items-center justify-between px-4 py-2 bg-amber-50 mx-4 rounded-2xl border border-amber-100">
+                                        <div className="flex items-center space-x-2">
+                                            <Coins className="w-5 h-5 text-amber-500" />
+                                            <span className="text-sm font-bold text-amber-900">내 골드</span>
+                                        </div>
+                                        <span className="text-lg font-black text-amber-700 font-display">
+                                            {character.gold.toLocaleString()} G
+                                        </span>
+                                    </div>
+                                )}
+                                <div className="grid grid-cols-3 gap-2 px-4">
                                     {navItems.map((item) => {
                                         const Icon = item.icon;
                                         const isActive = pathname === item.href;
@@ -137,22 +172,30 @@ export default function Header({ user }: HeaderProps) {
                                             <Link
                                                 key={item.href}
                                                 href={item.href}
-                                                className={`flex flex-col items-center justify-center p-4 rounded-2xl transition ${isActive
-                                                    ? 'bg-indigo-50 text-indigo-600 border border-indigo-100'
-                                                    : 'bg-slate-50 text-slate-600 border border-transparent'
+                                                className={`flex flex-col items-center justify-center p-3 rounded-2xl transition ${isActive
+                                                        ? 'bg-indigo-50 text-indigo-600 border border-indigo-100'
+                                                        : 'bg-slate-50 text-slate-600 border border-transparent'
                                                     }`}
                                                 onClick={() => setIsMenuOpen(false)}
                                             >
-                                                <Icon className="w-6 h-6 mb-2" />
-                                                <span className="text-xs font-bold">{item.name}</span>
+                                                <Icon className="w-6 h-6 mb-1" />
+                                                <span className="text-[10px] font-bold">{item.name}</span>
                                             </Link>
                                         );
                                     })}
                                 </div>
-                                <div className="px-4 py-2">
+                                <div className="px-4 space-y-2">
+                                    <Link
+                                        href="/character"
+                                        className="flex items-center justify-center space-x-2 w-full py-3 bg-white border border-slate-200 text-slate-700 rounded-2xl font-bold"
+                                        onClick={() => setIsMenuOpen(false)}
+                                    >
+                                        <Palette className="w-5 h-5 text-indigo-500" />
+                                        <span>캐릭터 꾸미기</span>
+                                    </Link>
                                     <Link
                                         href="/habits/new"
-                                        className="flex items-center justify-center space-x-2 w-full py-3 bg-indigo-600 text-white rounded-2xl font-bold"
+                                        className="flex items-center justify-center space-x-2 w-full py-3 bg-indigo-600 text-white rounded-2xl font-bold shadow-lg shadow-indigo-100"
                                         onClick={() => setIsMenuOpen(false)}
                                     >
                                         <PlusCircle className="w-5 h-5" />
@@ -196,4 +239,3 @@ export default function Header({ user }: HeaderProps) {
         </header>
     );
 }
-

@@ -6,7 +6,7 @@ import { Loader2, Calendar, LayoutList } from 'lucide-react';
 import Link from 'next/link';
 
 export default function TodoList() {
-    const { todos, loading, clearHabit } = useTodoList();
+    const { todos, loading, clearHabit, unclearHabit } = useTodoList();
 
     if (loading) {
         return (
@@ -55,7 +55,12 @@ export default function TodoList() {
 
                     <div className="grid grid-cols-1 gap-3">
                         {todos.map((todo) => (
-                            <TodoItem key={todo.id} todo={todo} onClear={clearHabit} />
+                            <TodoItem
+                                key={todo.id}
+                                todo={todo}
+                                onClear={clearHabit}
+                                onUnclear={unclearHabit}
+                            />
                         ))}
                     </div>
                 </>
