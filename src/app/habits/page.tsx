@@ -22,7 +22,7 @@ export default function HabitListPage() {
                 <div className="flex flex-col md:flex-row justify-between items-center mb-12 gap-6">
                     <div>
                         <h1 className="text-4xl font-black text-slate-900 font-display mb-2">나의 퀘스트 목록</h1>
-                        <p className="text-slate-500">지금까지 설정한 모든 습관을 관리할 수 있습니다.</p>
+                        <p className="text-slate-500">지금까지 설정한 모든 퀘스트를 관리할 수 있습니다.</p>
                     </div>
 
                     <Link
@@ -30,7 +30,7 @@ export default function HabitListPage() {
                         className="inline-flex items-center px-8 py-4 bg-indigo-600 text-white rounded-2xl font-bold shadow-lg shadow-indigo-100 hover:bg-indigo-700 hover:-translate-y-1 transition-all"
                     >
                         <Plus className="w-5 h-5 mr-2" />
-                        새 습관 추가하기
+                        퀘스트 추가하기
                     </Link>
                 </div>
 
@@ -39,8 +39,8 @@ export default function HabitListPage() {
                         <div className="w-24 h-24 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6 text-slate-300">
                             <Target className="w-12 h-12" />
                         </div>
-                        <h2 className="text-2xl font-bold text-slate-900 mb-2">아직 습관이 없네요!</h2>
-                        <p className="text-slate-500 mb-8">새로운 습관을 추가하고 모험을 시작해보세요.</p>
+                        <h2 className="text-2xl font-bold text-slate-900 mb-2">아직 퀘스트가 없네요!</h2>
+                        <p className="text-slate-500 mb-8">새로운 퀘스트를 추가하고 모험을 시작해보세요.</p>
                         <Link
                             href="/habits/new"
                             className="text-indigo-600 font-bold hover:underline"

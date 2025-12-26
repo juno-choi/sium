@@ -36,7 +36,7 @@ export default function NewHabitPage() {
 
                 <div className="bg-white rounded-[2rem] p-8 md:p-10 shadow-xl shadow-slate-200/50 border border-slate-100">
                     <div className="mb-8">
-                        <h1 className="text-3xl font-black text-slate-900 font-display mb-2">새로운 습관 만들기</h1>
+                        <h1 className="text-3xl font-black text-slate-900 font-display mb-2">새로운 퀘스트 만들기</h1>
                         <p className="text-slate-500">지속하고 싶은 좋은 습관을 정의해보세요.</p>
                     </div>
 

@@ -101,7 +101,7 @@ export default function HabitForm({ initialData, onSubmit, isSubmitting }: Habit
                 ) : (
                     <>
                         <Save className="w-5 h-5" />
-                        <span>습관 저장하기</span>
+                        <span>퀘스트 저장하기</span>
                     </>
                 )}
             </button>

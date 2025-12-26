@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
 import Link from 'next/link';
-import { Gamepad2, CheckCircle2, Trophy, Sparkles, ArrowRight, Target, Zap } from 'lucide-react';
+import { Sword, CheckCircle2, Trophy, Sparkles, ArrowRight, Target, Zap } from 'lucide-react';
 
 export default async function LandingPage() {
   const supabase = await createClient();
@@ -34,8 +34,8 @@ export default async function LandingPage() {
                   href="/dashboard"
                   className="inline-flex items-center px-8 py-4 bg-indigo-600 text-white text-lg font-bold rounded-2xl hover:bg-indigo-700 transition shadow-lg shadow-indigo-200 hover:-translate-y-1 transform duration-200"
                 >
-                  <Gamepad2 className="mr-2 w-5 h-5" />
-                  퀘스트 시작하기
+                  <Sword className="mr-2 w-5 h-5" />
+                  모험 시작하기
                 </Link>
               ) : (
                 <>
@@ -120,7 +120,7 @@ export default async function LandingPage() {
                   description="캐릭터의 레벨이 올라가며 새로운 모습을 발견하세요."
                 />
                 <StepItem
-                  icon={<Gamepad2 className="w-6 h-6 text-indigo-500" />}
+                  icon={<Sword className="w-6 h-6 text-indigo-500" />}
                   title="즐거운 습관 형성"
                   description="더 이상 의무가 아닌 즐거움으로 습관을 지속하세요."
                 />

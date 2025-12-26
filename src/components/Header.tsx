@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { User, LogOut, Menu, X, LayoutDashboard, PlusCircle, Settings } from 'lucide-react';
+import { User, LogOut, Menu, X, Sword, PlusCircle, BookPlus } from 'lucide-react';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter, usePathname } from 'next/navigation';
@@ -25,8 +25,8 @@ export default function Header({ user }: HeaderProps) {
     };
 
     const navItems = [
-        { name: '대시보드', href: '/dashboard', icon: LayoutDashboard },
-        { name: '습관 관리', href: '/habits', icon: Settings },
+        { name: '모험하기', href: '/dashboard', icon: Sword },
+        { name: '퀘스트 관리', href: '/habits', icon: BookPlus },
     ];
 
     return (
@@ -92,7 +92,7 @@ export default function Header({ user }: HeaderProps) {
                                                 onClick={() => setIsProfileOpen(false)}
                                             >
                                                 <PlusCircle className="w-4 h-4" />
-                                                <span>새 습관 추가</span>
+                                                <span>새 퀘스트 추가</span>
                                             </Link>
                                             <button
                                                 onClick={handleLogout}
@@ -156,7 +156,7 @@ export default function Header({ user }: HeaderProps) {
                                         onClick={() => setIsMenuOpen(false)}
                                     >
                                         <PlusCircle className="w-5 h-5" />
-                                        <span>새 습관 추가</span>
+                                        <span>새 퀘스트 추가</span>
                                     </Link>
                                 </div>
                                 <div className="border-t border-slate-100 pt-4 flex items-center justify-between px-4">
