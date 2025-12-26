@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: 'Sium',
-  description: '간편한 전단지 제작 및 공유 서비스',
+  description: '귀여운 캐릭터와 함께 성장하는 습관 형성 앱',
   icons: {
     icon: '/favicon.png',
   },
@@ -23,10 +23,8 @@ export const metadata: Metadata = {
 
 import Header from '@/components/Header';
 import { createClient } from '@/lib/supabase/server';
-
-// ... (existing imports)
-
 import { ToastProvider } from '@/components/ui/Toast';
+import { CharacterProvider } from '@/components/providers/CharacterProvider';
 
 export default async function RootLayout({
   children,
@@ -39,13 +37,16 @@ export default async function RootLayout({
   } = await supabase.auth.getUser();
 
   return (
-    <html lang="en">
+    <html lang="ko">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <ToastProvider>
-          <Header user={user} />
-          {children}
-        </ToastProvider>
+        <CharacterProvider>
+          <ToastProvider>
+            <Header user={user} />
+            {children}
+          </ToastProvider>
+        </CharacterProvider>
       </body>
     </html>
   );
 }
+

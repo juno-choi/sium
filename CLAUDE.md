@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-전단지(Flyer) 웹사이트 프로젝트입니다.
+캐릭터와 함께 성장하는 나의 습관 웹
 
 ## Tech Stack
 

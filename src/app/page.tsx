@@ -69,10 +69,10 @@ export default async function LandingPage() {
       <section id="features" className="py-24 bg-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-20">
-            <h2 className="text-3xl font-bold text-slate-900 mb-4 font-display">왜 HabitQuest 인가요?</h2>
+            <h2 className="text-3xl font-bold text-slate-900 mb-4 font-display">왜 Sium 인가요?</h2>
             <p className="text-slate-600 max-w-2xl mx-auto">
               습관 형성이 어려운 이유는 즐거움이 없기 때문입니다.
-              HabitQuest는 당신의 성취를 시각화하고 보상합니다.
+              Sium은 당신의 성취를 시각화하고 보상합니다.
             </p>
           </div>
 
@@ -154,10 +154,10 @@ export default async function LandingPage() {
       <footer className="bg-white border-t border-slate-100 py-12">
         <div className="container mx-auto px-4 text-center">
           <div className="flex items-center justify-center space-x-2 mb-4">
-            <span className="text-xl font-bold text-slate-900 font-display">HabitQuest</span>
+            <span className="text-xl font-bold text-slate-900 font-display">Sium</span>
           </div>
           <p className="text-slate-500 text-sm">
-            © 2025 HabitQuest. All rights reserved.
+            © 2025 Sium. All rights reserved.
           </p>
         </div>
       </footer>

@@ -36,10 +36,10 @@ export default function Header({ user }: HeaderProps) {
                     {/* Logo */}
                     <Link href="/" className="flex items-center space-x-2 group">
                         <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center transform group-hover:rotate-12 transition-transform">
-                            <span className="text-white font-black text-xl leading-none">H</span>
+                            <span className="text-white font-black text-xl leading-none">S</span>
                         </div>
                         <span className="text-xl font-bold text-slate-900 font-display">
-                            HabitQuest
+                            Sium
                         </span>
                     </Link>
 
@@ -55,8 +55,8 @@ export default function Header({ user }: HeaderProps) {
                                             key={item.href}
                                             href={item.href}
                                             className={`flex items-center space-x-2 px-4 py-2 rounded-xl transition ${isActive
-                                                    ? 'bg-indigo-50 text-indigo-600 font-bold'
-                                                    : 'text-slate-600 hover:bg-slate-50'
+                                                ? 'bg-indigo-50 text-indigo-600 font-bold'
+                                                : 'text-slate-600 hover:bg-slate-50'
                                                 }`}
                                         >
                                             <Icon className="w-4 h-4" />
