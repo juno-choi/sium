@@ -11,7 +11,7 @@ export function useTodoList() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const supabase = createClient();
-    const { addRewards, removeRewards } = useCharacter();
+    const { addRewards } = useCharacter();
 
     const fetchTodos = async () => {
         try {
@@ -101,45 +101,7 @@ export function useTodoList() {
         }
     };
 
-    const unclearHabit = async (habitId: string) => {
-        try {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) throw new Error('Not authenticated');
 
-            const dateStr = new Date().toISOString().split('T')[0];
-
-            // 1. Fetch the log to know how much to subtract
-            const { data: log, error: fetchError } = await supabase
-                .from('habit_logs')
-                .select('*')
-                .eq('habit_id', habitId)
-                .eq('completed_date', dateStr)
-                .single();
-
-            if (fetchError) throw fetchError;
-
-            // 2. Delete the log
-            const { error: deleteError } = await supabase
-                .from('habit_logs')
-                .delete()
-                .eq('id', log.id);
-
-            if (deleteError) throw deleteError;
-
-            // 3. Remove rewards from character
-            await removeRewards(log.xp_earned, log.gold_earned);
-
-            // 4. Update local state
-            setTodos(todos.map(todo =>
-                todo.id === habitId ? { ...todo, is_completed: false } : todo
-            ));
-
-            return { success: true };
-        } catch (err: any) {
-            setError(err.message);
-            throw err;
-        }
-    }
 
     useEffect(() => {
         fetchTodos();
@@ -150,7 +112,6 @@ export function useTodoList() {
         loading,
         error,
         clearHabit,
-        unclearHabit,
         refresh: fetchTodos
     };
 }

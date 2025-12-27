@@ -6,7 +6,7 @@ import { Loader2, Calendar, LayoutList } from 'lucide-react';
 import Link from 'next/link';
 
 export default function TodoList() {
-    const { todos, loading, clearHabit, unclearHabit } = useTodoList();
+    const { todos, loading, clearHabit } = useTodoList();
 
     if (loading) {
         return (
@@ -59,7 +59,6 @@ export default function TodoList() {
                                 key={todo.id}
                                 todo={todo}
                                 onClear={clearHabit}
-                                onUnclear={unclearHabit}
                             />
                         ))}
                     </div>

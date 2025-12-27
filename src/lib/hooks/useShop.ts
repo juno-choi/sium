@@ -15,7 +15,9 @@ export function useShop() {
 
     const fetchShopData = useCallback(async () => {
         try {
-            setLoading(true);
+            if (items.length === 0 && userItems.length === 0) {
+                setLoading(true);
+            }
             const { data: { user } } = await supabase.auth.getUser();
             if (!user) return;
 
@@ -31,7 +33,7 @@ export function useShop() {
             // 2. Fetch user's owned items
             const { data: ownedItems, error: ownedError } = await supabase
                 .from('user_equipment')
-                .select('*')
+                .select('*, item:equipment_items(*)')
                 .eq('user_id', user.id);
 
             if (ownedError) throw ownedError;

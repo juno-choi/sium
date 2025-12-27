@@ -33,6 +33,7 @@ export default function Header({ user }: HeaderProps) {
         { name: '모험하기', href: '/dashboard', icon: Sword },
         { name: '퀘스트 관리', href: '/habits', icon: BookPlus },
         { name: '상점', href: '/shop', icon: ShoppingBag },
+        { name: '캐릭터 꾸미기', href: '/character', icon: Palette },
     ];
 
     return (
@@ -61,8 +62,8 @@ export default function Header({ user }: HeaderProps) {
                                             key={item.href}
                                             href={item.href}
                                             className={`flex items-center space-x-2 px-4 py-2 rounded-xl transition ${isActive
-                                                    ? 'bg-indigo-50 text-indigo-600 font-bold'
-                                                    : 'text-slate-600 hover:bg-slate-50'
+                                                ? 'bg-indigo-50 text-indigo-600 font-bold'
+                                                : 'text-slate-600 hover:bg-slate-50'
                                                 }`}
                                         >
                                             <Icon className="w-4 h-4" />
@@ -102,14 +103,6 @@ export default function Header({ user }: HeaderProps) {
                                             <div className="px-4 py-2 border-b border-slate-100 mb-1">
                                                 <p className="text-xs text-slate-500 truncate">{user.email}</p>
                                             </div>
-                                            <Link
-                                                href="/character"
-                                                className="flex items-center space-x-2 px-4 py-2 text-sm text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 transition"
-                                                onClick={() => setIsProfileOpen(false)}
-                                            >
-                                                <Palette className="w-4 h-4" />
-                                                <span>캐릭터 꾸미기</span>
-                                            </Link>
                                             <Link
                                                 href="/habits/new"
                                                 className="flex items-center space-x-2 px-4 py-2 text-sm text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 transition"
@@ -173,8 +166,8 @@ export default function Header({ user }: HeaderProps) {
                                                 key={item.href}
                                                 href={item.href}
                                                 className={`flex flex-col items-center justify-center p-3 rounded-2xl transition ${isActive
-                                                        ? 'bg-indigo-50 text-indigo-600 border border-indigo-100'
-                                                        : 'bg-slate-50 text-slate-600 border border-transparent'
+                                                    ? 'bg-indigo-50 text-indigo-600 border border-indigo-100'
+                                                    : 'bg-slate-50 text-slate-600 border border-transparent'
                                                     }`}
                                                 onClick={() => setIsMenuOpen(false)}
                                             >

@@ -19,7 +19,9 @@ export function useEquipment() {
 
     const fetchEquipment = useCallback(async () => {
         try {
-            setLoading(true);
+            // Only set loading to true if we don't have any data yet
+            const isInitialLoad = Object.values(equippedItems).every(item => item === null);
+            if (isInitialLoad) setLoading(true);
             const { data: { user } } = await supabase.auth.getUser();
             if (!user) return;
 

@@ -12,7 +12,7 @@ export default function CharacterPage() {
     const { character, loading: charLoading } = useCharacter();
     const { equippedItems, toggleEquip, loading: equipLoading } = useEquipment();
     const { options, changeOption, loading: customLoading } = useCustomization();
-    const { userItems } = useShop();
+    const { userItems, refresh: refreshShop } = useShop();
 
     const [activeMainTab, setActiveMainTab] = useState<'appearance' | 'equipment'>('appearance');
     const [activeSubTab, setActiveSubTab] = useState<string>('hair');
@@ -96,8 +96,8 @@ export default function CharacterPage() {
                             <button
                                 onClick={() => { setActiveMainTab('appearance'); setActiveSubTab('hair'); }}
                                 className={`flex-1 py-4 px-6 rounded-2xl font-bold flex items-center justify-center gap-2 transition-all ${activeMainTab === 'appearance'
-                                        ? 'bg-slate-900 text-white shadow-lg'
-                                        : 'text-slate-500 hover:bg-slate-50'
+                                    ? 'bg-slate-900 text-white shadow-lg'
+                                    : 'text-slate-500 hover:bg-slate-50'
                                     }`}
                             >
                                 <Palette className="w-5 h-5" />
@@ -106,8 +106,8 @@ export default function CharacterPage() {
                             <button
                                 onClick={() => { setActiveMainTab('equipment'); setActiveSubTab('hat'); }}
                                 className={`flex-1 py-4 px-6 rounded-2xl font-bold flex items-center justify-center gap-2 transition-all ${activeMainTab === 'equipment'
-                                        ? 'bg-slate-900 text-white shadow-lg'
-                                        : 'text-slate-500 hover:bg-slate-50'
+                                    ? 'bg-slate-900 text-white shadow-lg'
+                                    : 'text-slate-500 hover:bg-slate-50'
                                     }`}
                             >
                                 <Shield className="w-5 h-5" />
@@ -178,7 +178,10 @@ export default function CharacterPage() {
                                         return (
                                             <button
                                                 key={ui.id}
-                                                onClick={() => toggleEquip(ui.id, activeSubTab as EquipmentSlot, isEquipped)}
+                                                onClick={async () => {
+                                                    await toggleEquip(ui.id, activeSubTab as EquipmentSlot, isEquipped);
+                                                    refreshShop();
+                                                }}
                                                 className={`relative p-6 rounded-3xl border-2 transition-all flex flex-col items-center gap-3 ${isEquipped ? 'border-indigo-600 bg-indigo-50/30' : 'border-slate-100 hover:border-slate-200'
                                                     }`}
                                             >

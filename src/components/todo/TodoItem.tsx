@@ -8,7 +8,6 @@ import { HabitDifficulty } from '@/types/habit';
 interface TodoItemProps {
     todo: TodoType;
     onClear: (id: string, difficulty: HabitDifficulty) => Promise<any>;
-    onUnclear: (id: string) => Promise<any>;
 }
 
 const difficultyStyles = {
@@ -23,7 +22,7 @@ const rewardTable = {
     hard: { xp: 35, gold: 350 },
 };
 
-export default function TodoItem({ todo, onClear, onUnclear }: TodoItemProps) {
+export default function TodoItem({ todo, onClear }: TodoItemProps) {
     const [isProcessing, setIsProcessing] = useState(false);
     const [showRewards, setShowRewards] = useState(false);
     const styles = difficultyStyles[todo.difficulty];
@@ -44,21 +43,7 @@ export default function TodoItem({ todo, onClear, onUnclear }: TodoItemProps) {
         }
     };
 
-    const handleUnclear = async (e: React.MouseEvent) => {
-        e.stopPropagation();
-        if (!todo.is_completed || isProcessing) return;
 
-        if (!confirm('퀘스트 완료를 취소하시겠습니까? 획득한 경험치와 골드가 차감됩니다.')) return;
-
-        setIsProcessing(true);
-        try {
-            await onUnclear(todo.id);
-        } catch (err) {
-            console.error(err);
-        } finally {
-            setIsProcessing(false);
-        }
-    };
 
     return (
         <div
@@ -99,16 +84,7 @@ export default function TodoItem({ todo, onClear, onUnclear }: TodoItemProps) {
                     )}
                 </div>
 
-                {todo.is_completed && !showRewards && (
-                    <button
-                        onClick={handleUnclear}
-                        disabled={isProcessing}
-                        className="flex items-center space-x-1 px-3 py-1.5 rounded-xl text-xs font-bold text-slate-400 hover:text-rose-500 hover:bg-rose-50 transition-colors"
-                    >
-                        <RotateCcw className="w-3.5 h-3.5" />
-                        <span>취소</span>
-                    </button>
-                )}
+
             </div>
 
             {/* Floating Rewards effect */}

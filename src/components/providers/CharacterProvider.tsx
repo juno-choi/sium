@@ -11,7 +11,6 @@ interface CharacterContextType {
     error: string | null;
     selectCharacter: (characterId: number) => Promise<UserCharacter>;
     addRewards: (xp: number, gold: number) => Promise<{ data: UserCharacter; leveledUp: boolean }>;
-    removeRewards: (xp: number, gold: number) => Promise<{ data: UserCharacter }>;
     updateAppearance: (appearance: Partial<Pick<UserCharacter, 'hair_style' | 'face_shape' | 'skin_color'>>) => Promise<UserCharacter>;
     refresh: () => Promise<void>;
 }
@@ -127,42 +126,7 @@ export function CharacterProvider({ children }: { children: React.ReactNode }) {
         }
     };
 
-    const removeRewards = async (xp: number, gold: number) => {
-        if (!character) throw new Error('No character selected');
 
-        try {
-            let finalXP = character.current_xp - xp;
-            let finalLevel = character.current_level;
-            let finalGold = Math.max(0, character.gold - gold);
-
-            if (finalXP < 0 && finalLevel > 1) {
-                finalLevel -= 1;
-                const prevLevelThreshold = finalLevel * 100;
-                finalXP = prevLevelThreshold + finalXP;
-            } else if (finalXP < 0) {
-                finalXP = 0;
-            }
-
-            const { data, error } = await supabase
-                .from('user_characters')
-                .update({
-                    current_xp: finalXP,
-                    current_level: finalLevel,
-                    gold: finalGold,
-                    updated_at: new Date().toISOString(),
-                })
-                .eq('id', character.id)
-                .select('*, character:characters(*)')
-                .single();
-
-            if (error) throw error;
-            setCharacter(data);
-            return { data };
-        } catch (err: any) {
-            setError(err.message);
-            throw err;
-        }
-    };
 
     const updateAppearance = async (appearance: Partial<Pick<UserCharacter, 'hair_style' | 'face_shape' | 'skin_color'>>) => {
         if (!character) throw new Error('No character selected');
@@ -201,7 +165,6 @@ export function CharacterProvider({ children }: { children: React.ReactNode }) {
                 error,
                 selectCharacter,
                 addRewards,
-                removeRewards,
                 updateAppearance,
                 refresh: fetchUserCharacter,
             }}
