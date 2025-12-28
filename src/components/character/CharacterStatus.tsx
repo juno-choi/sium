@@ -71,27 +71,6 @@ export default function CharacterStatus({ userCharacter }: CharacterStatusProps)
                 </div>
             </div>
 
-            {/* Character Selection */}
-            {userCharacters.length > 1 && (
-                <div className="flex flex-wrap gap-4">
-                    {userCharacters.map((uc) => (
-                        <button
-                            key={uc.id}
-                            onClick={() => switchCharacter(uc.id)}
-                            className={`flex items-center gap-3 p-3 rounded-2xl border-2 transition-all ${uc.id === userCharacter.id
-                                ? 'bg-slate-900 border-slate-900 text-white shadow-lg'
-                                : 'bg-white border-slate-100 text-slate-500 hover:border-indigo-200'
-                                }`}
-                        >
-                            <span className="text-2xl">{uc.character?.base_image_url}</span>
-                            <div className="text-left pr-2">
-                                <p className="text-[10px] font-bold opacity-70 uppercase tracking-tight">Level {uc.current_level}</p>
-                                <p className="text-sm font-black font-display">{uc.character?.name}</p>
-                            </div>
-                        </button>
-                    ))}
-                </div>
-            )}
         </div>
     );
 }

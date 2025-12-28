@@ -13,7 +13,7 @@ export function useShop() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const supabase = createClient();
-    const { character, gold, updateGold, refresh: refreshCharacter } = useCharacter();
+    const { character, gold, spendGold, refresh: refreshCharacter } = useCharacter();
 
     const fetchShopData = useCallback(async () => {
         try {
@@ -60,8 +60,8 @@ export function useShop() {
         if (gold < price) throw new Error('골드가 부족합니다.');
 
         try {
-            // 1. Deduct gold
-            await updateGold(gold - price);
+            // 1. Deduct gold using latest DB state
+            await spendGold(price);
 
             // 2. Add item to user_equipment for THIS character
             const { error: buyError } = await supabase
@@ -91,8 +91,8 @@ export function useShop() {
             const { data: { user } } = await supabase.auth.getUser();
             if (!user) throw new Error('인증되지 않았습니다.');
 
-            // 1. Deduct gold
-            await updateGold(gold - price);
+            // 1. Deduct gold using latest DB state
+            await spendGold(price);
 
             // 2. Add character to user_characters
             const { error: buyError } = await supabase

@@ -3,12 +3,15 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCharacter } from '@/lib/hooks/useCharacter';
-import { Sparkles, Check, ArrowRight, Loader2 } from 'lucide-react';
+import { Sparkles, Check, ArrowRight, Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
+
+const ITEMS_PER_PAGE = 6;
 
 export default function CharacterSelectPage() {
     const { availableCharacters, selectCharacter, loading: hookLoading, character, userCharacters } = useCharacter();
     const [selectedId, setSelectedId] = useState<number | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
     const router = useRouter();
 
     // Redirect to dashboard if character already exists
@@ -56,7 +59,7 @@ export default function CharacterSelectPage() {
                 </p>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-                    {availableCharacters.map((char) => {
+                    {availableCharacters.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE).map((char) => {
                         const isOwned = userCharacters.some(uc => uc.character_id === char.id);
                         return (
                             <button
@@ -91,6 +94,29 @@ export default function CharacterSelectPage() {
                         );
                     })}
                 </div>
+
+                {/* Paging */}
+                {availableCharacters.length > ITEMS_PER_PAGE && (
+                    <div className="flex justify-center items-center gap-4 mb-8">
+                        <button
+                            disabled={currentPage === 1}
+                            onClick={() => setCurrentPage(prev => prev - 1)}
+                            className="p-2 rounded-xl border border-slate-200 hover:bg-white disabled:opacity-30"
+                        >
+                            <ChevronLeft className="w-5 h-5" />
+                        </button>
+                        <span className="text-sm font-bold text-slate-600">
+                            {currentPage} / {Math.ceil(availableCharacters.length / ITEMS_PER_PAGE)}
+                        </span>
+                        <button
+                            disabled={currentPage === Math.ceil(availableCharacters.length / ITEMS_PER_PAGE)}
+                            onClick={() => setCurrentPage(prev => prev + 1)}
+                            className="p-2 rounded-xl border border-slate-200 hover:bg-white disabled:opacity-30"
+                        >
+                            <ChevronRight className="w-5 h-5" />
+                        </button>
+                    </div>
+                )}
 
                 <button
                     onClick={handleSelect}

@@ -3,16 +3,21 @@
 import { useCharacter } from '@/lib/hooks/useCharacter';
 import { useEquipment } from '@/lib/hooks/useEquipment';
 import { useShop } from '@/lib/hooks/useShop';
-import { Loader2, Shield, User, ChevronRight, Check } from 'lucide-react';
+import { Loader2, Shield, User, ChevronRight, Check, Users as UsersIcon, ChevronLeft } from 'lucide-react';
 import { useState } from 'react';
 import { EquipmentSlot } from '@/types/equipment';
+
+const ITEMS_PER_PAGE = 6;
 
 export default function CharacterPage() {
     const { character, userCharacters, switchCharacter, loading: charLoading } = useCharacter();
     const { equippedItems, toggleEquip, loading: equipLoading } = useEquipment();
     const { userItems, refresh: refreshShop } = useShop();
 
+    const [activeMainTab, setActiveMainTab] = useState<'companions' | 'equipment'>('companions');
     const [activeSubTab, setActiveSubTab] = useState<string>('hat');
+    const [charPage, setCharPage] = useState(1);
+    const [equipPage, setEquipPage] = useState(1);
 
     const isLoading = charLoading || equipLoading;
 
@@ -29,28 +34,7 @@ export default function CharacterPage() {
     return (
         <div className="min-h-screen bg-slate-50 py-12 px-4">
             <div className="max-w-6xl mx-auto">
-                {/* Character Selection Bar */}
-                {userCharacters.length > 1 && (
-                    <div className="flex flex-wrap gap-4 mb-10 bg-white p-6 rounded-[2.5rem] border border-slate-100 shadow-sm">
-                        {userCharacters.map((uc) => (
-                            <button
-                                key={uc.id}
-                                onClick={() => switchCharacter(uc.id)}
-                                className={`flex items-center gap-3 px-6 py-3 rounded-2xl border-2 transition-all ${uc.id === character.id
-                                    ? 'bg-slate-900 border-slate-900 text-white shadow-lg'
-                                    : 'bg-white border-slate-100 text-slate-500 hover:border-indigo-200'
-                                    }`}
-                            >
-                                <span className="text-2xl">{uc.character?.base_image_url}</span>
-                                <div className="text-left">
-                                    <p className="text-[10px] font-bold opacity-70 uppercase">Level {uc.current_level}</p>
-                                    <p className="text-sm font-black font-display">{uc.character?.name}</p>
-                                </div>
-                                {uc.id === character.id && <Check className="w-4 h-4 text-indigo-400 ml-2" />}
-                            </button>
-                        ))}
-                    </div>
-                )}
+
 
                 <div className="flex flex-col lg:flex-row gap-10">
                     {/* Left Side: Character Preview */}
@@ -108,73 +92,170 @@ export default function CharacterPage() {
                         </div>
                     </div>
 
-                    {/* Right Side: Customization Tabs */}
+                    {/* Right Side Sections */}
                     <div className="lg:w-3/5 space-y-6">
-                        {/* Tab Title */}
-                        <div className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-xl shadow-slate-200/50 flex items-center gap-3">
-                            <div className="w-12 h-12 bg-slate-900 rounded-2xl flex items-center justify-center text-white">
-                                <Shield className="w-6 h-6" />
-                            </div>
-                            <div>
-                                <h2 className="text-xl font-black text-slate-900 font-display">보유 장비</h2>
-                                <p className="text-sm text-slate-500 font-medium">착용할 장비를 선택하세요.</p>
-                            </div>
+                        {/* Main Tabs */}
+                        <div className="bg-white p-2 rounded-[2rem] border border-slate-100 shadow-xl shadow-slate-200/50 flex gap-2">
+                            <button
+                                onClick={() => setActiveMainTab('companions')}
+                                className={`flex-1 py-4 px-6 rounded-2xl font-bold flex items-center justify-center gap-2 transition-all ${activeMainTab === 'companions'
+                                    ? 'bg-slate-900 text-white shadow-lg'
+                                    : 'text-slate-500 hover:bg-slate-50'
+                                    }`}
+                            >
+                                <UsersIcon className="w-5 h-5" />
+                                <span>내 동료</span>
+                            </button>
+                            <button
+                                onClick={() => setActiveMainTab('equipment')}
+                                className={`flex-1 py-4 px-6 rounded-2xl font-bold flex items-center justify-center gap-2 transition-all ${activeMainTab === 'equipment'
+                                    ? 'bg-slate-900 text-white shadow-lg'
+                                    : 'text-slate-500 hover:bg-slate-50'
+                                    }`}
+                            >
+                                <Shield className="w-5 h-5" />
+                                <span>보유 장비</span>
+                            </button>
                         </div>
 
-                        {/* Sub Tabs (Categories) */}
-                        <div className="flex overflow-x-auto gap-2 no-scrollbar pb-2">
-                            {['hat', 'top', 'bottom', 'shoes', 'gloves', 'weapon'].map(slot => (
-                                <button
-                                    key={slot}
-                                    onClick={() => setActiveSubTab(slot)}
-                                    className={`px-6 py-2.5 rounded-xl font-bold transition-all whitespace-nowrap ${activeSubTab === slot ? 'bg-indigo-600 text-white' : 'bg-white border text-slate-500'
-                                        }`}
-                                >
-                                    {slot === 'hat' ? '모자' : slot === 'top' ? '상의' : slot === 'bottom' ? '하의' : slot === 'shoes' ? '신발' : slot === 'gloves' ? '장갑' : '무기'}
-                                </button>
-                            ))}
-                        </div>
+                        {activeMainTab === 'companions' ? (
+                            <div className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-xl shadow-slate-200/50 min-h-[500px] flex flex-col">
+                                <div className="flex items-center justify-between mb-8">
+                                    <h2 className="text-2xl font-black text-slate-900 font-display">동료 목록</h2>
+                                    <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Total {userCharacters.length}</span>
+                                </div>
 
-                        {/* Options Rendering */}
-                        <div className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-xl shadow-slate-200/50 min-h-[400px]">
-                            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                                {userItems.filter(ui => ui.item?.slot === activeSubTab).map(ui => {
-                                    const isEquipped = ui.is_equipped;
-                                    return (
-                                        <button
-                                            key={ui.id}
-                                            onClick={async () => {
-                                                await toggleEquip(ui.id, activeSubTab as EquipmentSlot, isEquipped);
-                                                refreshShop();
-                                            }}
-                                            className={`relative p-6 rounded-3xl border-2 transition-all flex flex-col items-center gap-3 ${isEquipped ? 'border-indigo-600 bg-indigo-50/30' : 'border-slate-100 hover:border-slate-200'
-                                                }`}
-                                        >
-                                            <div className="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center text-4xl shadow-inner">
-                                                {ui.item?.image_url}
-                                            </div>
-                                            <div className="text-center">
-                                                <h4 className="text-sm font-bold text-slate-800 mb-1">{ui.item?.name}</h4>
-                                                <span className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter">
-                                                    {ui.item?.rarity}
-                                                </span>
-                                            </div>
-                                            {isEquipped && (
-                                                <div className="absolute top-2 right-2 w-6 h-6 bg-indigo-600 rounded-full flex items-center justify-center">
-                                                    <Check className="w-4 h-4 text-white" />
+                                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 flex-1">
+                                    {userCharacters.slice((charPage - 1) * ITEMS_PER_PAGE, charPage * ITEMS_PER_PAGE).map((uc) => {
+                                        const isActive = uc.id === character.id;
+                                        return (
+                                            <button
+                                                key={uc.id}
+                                                onClick={() => switchCharacter(uc.id)}
+                                                className={`relative p-6 rounded-3xl border-2 transition-all flex flex-col items-center gap-3 ${isActive ? 'border-indigo-600 bg-indigo-50/30' : 'border-slate-100 hover:border-slate-200'
+                                                    }`}
+                                            >
+                                                <div className="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center text-5xl shadow-inner">
+                                                    {uc.character?.base_image_url}
                                                 </div>
-                                            )}
+                                                <div className="text-center">
+                                                    <p className="text-[10px] font-bold text-indigo-500 uppercase">LV. {uc.current_level}</p>
+                                                    <h4 className="text-sm font-bold text-slate-800">{uc.character?.name}</h4>
+                                                </div>
+                                                {isActive && (
+                                                    <div className="absolute top-2 right-2 w-6 h-6 bg-indigo-600 rounded-full flex items-center justify-center">
+                                                        <Check className="w-4 h-4 text-white" />
+                                                    </div>
+                                                )}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+
+                                {/* Paging */}
+                                {userCharacters.length > ITEMS_PER_PAGE && (
+                                    <div className="flex justify-center items-center gap-4 mt-8 pt-4 border-t border-slate-50">
+                                        <button
+                                            disabled={charPage === 1}
+                                            onClick={() => setCharPage(prev => prev - 1)}
+                                            className="p-2 rounded-xl border border-slate-100 hover:bg-slate-50 disabled:opacity-30"
+                                        >
+                                            <ChevronLeft className="w-5 h-5" />
                                         </button>
-                                    );
-                                })}
-                                {userItems.filter(ui => ui.item?.slot === activeSubTab).length === 0 && (
-                                    <div className="col-span-full py-12 text-center">
-                                        <p className="text-slate-400 font-bold">보유한 아이템이 없습니다.</p>
-                                        <p className="text-xs text-slate-400 mt-2">상점에서 새로운 장비를 구매해보세요!</p>
+                                        <span className="text-sm font-bold text-slate-600">{charPage} / {Math.ceil(userCharacters.length / ITEMS_PER_PAGE)}</span>
+                                        <button
+                                            disabled={charPage === Math.ceil(userCharacters.length / ITEMS_PER_PAGE)}
+                                            onClick={() => setCharPage(prev => prev + 1)}
+                                            className="p-2 rounded-xl border border-slate-100 hover:bg-slate-50 disabled:opacity-30"
+                                        >
+                                            <ChevronRight className="w-5 h-5" />
+                                        </button>
                                     </div>
                                 )}
                             </div>
-                        </div>
+                        ) : (
+                            <div className="space-y-6">
+                                {/* Sub Tabs (Categories) */}
+                                <div className="flex overflow-x-auto gap-2 no-scrollbar pb-2">
+                                    {['hat', 'top', 'bottom', 'shoes', 'gloves', 'weapon'].map(slot => (
+                                        <button
+                                            key={slot}
+                                            onClick={() => { setActiveSubTab(slot); setEquipPage(1); }}
+                                            className={`px-6 py-2.5 rounded-xl font-bold transition-all whitespace-nowrap ${activeSubTab === slot ? 'bg-indigo-600 text-white' : 'bg-white border text-slate-500'
+                                                }`}
+                                        >
+                                            {slot === 'hat' ? '모자' : slot === 'top' ? '상의' : slot === 'bottom' ? '하의' : slot === 'shoes' ? '신발' : slot === 'gloves' ? '장갑' : '무기'}
+                                        </button>
+                                    ))}
+                                </div>
+
+                                <div className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-xl shadow-slate-200/50 min-h-[500px] flex flex-col">
+                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 flex-1">
+                                        {userItems
+                                            .filter(ui => ui.item?.slot === activeSubTab)
+                                            .slice((equipPage - 1) * ITEMS_PER_PAGE, equipPage * ITEMS_PER_PAGE)
+                                            .map(ui => {
+                                                const isEquipped = ui.is_equipped;
+                                                return (
+                                                    <button
+                                                        key={ui.id}
+                                                        onClick={async () => {
+                                                            await toggleEquip(ui.id, activeSubTab as EquipmentSlot, isEquipped);
+                                                            refreshShop();
+                                                        }}
+                                                        className={`relative p-6 rounded-3xl border-2 transition-all flex flex-col items-center gap-3 ${isEquipped ? 'border-indigo-600 bg-indigo-50/30' : 'border-slate-100 hover:border-slate-200'
+                                                            }`}
+                                                    >
+                                                        <div className="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center text-4xl shadow-inner">
+                                                            {ui.item?.image_url}
+                                                        </div>
+                                                        <div className="text-center">
+                                                            <h4 className="text-sm font-bold text-slate-800 mb-1">{ui.item?.name}</h4>
+                                                            <span className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter">
+                                                                {ui.item?.rarity}
+                                                            </span>
+                                                        </div>
+                                                        {isEquipped && (
+                                                            <div className="absolute top-2 right-2 w-6 h-6 bg-indigo-600 rounded-full flex items-center justify-center">
+                                                                <Check className="w-4 h-4 text-white" />
+                                                            </div>
+                                                        )}
+                                                    </button>
+                                                );
+                                            })}
+                                        {userItems.filter(ui => ui.item?.slot === activeSubTab).length === 0 && (
+                                            <div className="col-span-full py-12 text-center">
+                                                <p className="text-slate-400 font-bold">보유한 아이템이 없습니다.</p>
+                                                <p className="text-xs text-slate-400 mt-2">상점에서 새로운 장비를 구매해보세요!</p>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Paging */}
+                                    {userItems.filter(ui => ui.item?.slot === activeSubTab).length > ITEMS_PER_PAGE && (
+                                        <div className="flex justify-center items-center gap-4 mt-8 pt-4 border-t border-slate-50">
+                                            <button
+                                                disabled={equipPage === 1}
+                                                onClick={() => setEquipPage(prev => prev - 1)}
+                                                className="p-2 rounded-xl border border-slate-100 hover:bg-slate-50 disabled:opacity-30"
+                                            >
+                                                <ChevronLeft className="w-5 h-5" />
+                                            </button>
+                                            <span className="text-sm font-bold text-slate-600">
+                                                {equipPage} / {Math.ceil(userItems.filter(ui => ui.item?.slot === activeSubTab).length / ITEMS_PER_PAGE)}
+                                            </span>
+                                            <button
+                                                disabled={equipPage === Math.ceil(userItems.filter(ui => ui.item?.slot === activeSubTab).length / ITEMS_PER_PAGE)}
+                                                onClick={() => setEquipPage(prev => prev + 1)}
+                                                className="p-2 rounded-xl border border-slate-100 hover:bg-slate-50 disabled:opacity-30"
+                                            >
+                                                <ChevronRight className="w-5 h-5" />
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
                     </div>
 
                 </div>

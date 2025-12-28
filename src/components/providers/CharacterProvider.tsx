@@ -15,6 +15,7 @@ interface CharacterContextType {
     switchCharacter: (userCharacterId: string) => Promise<void>;
     addRewards: (xp: number, earnedGold: number) => Promise<{ data: UserCharacter; leveledUp: boolean }>;
     updateGold: (newGold: number) => Promise<void>;
+    spendGold: (amount: number) => Promise<void>;
     refresh: () => Promise<void>;
 }
 
@@ -63,9 +64,8 @@ export function CharacterProvider({ children }: { children: React.ReactNode }) {
                 .single();
 
             if (profileError) {
-                // Profile might not exist yet for new users
                 if (profileError.code !== 'PGRST116') throw profileError;
-                setGold(0);
+                console.warn('Profile not found for user:', user.id);
             } else {
                 setGold(profile.gold || 0);
             }
@@ -207,11 +207,21 @@ export function CharacterProvider({ children }: { children: React.ReactNode }) {
             if (charError) throw charError;
 
             // 2. Update Shared Gold
-            const newGold = gold + earnedGold;
+            // Always fetch latest gold from DB to prevent race conditions or stale state issues
+            const { data: profile, error: profileFetchError } = await supabase
+                .from('users')
+                .select('gold')
+                .eq('uuid', user.id)
+                .maybeSingle(); // Use maybeSingle to avoid PGRST116
+
+            if (profileFetchError) throw profileFetchError;
+
+            const currentGold = profile?.gold || 0;
+            const newGold = currentGold + earnedGold;
+
             const { error: goldError } = await supabase
                 .from('users')
-                .update({ gold: newGold })
-                .eq('uuid', user.id);
+                .upsert({ uuid: user.id, gold: newGold }, { onConflict: 'uuid' });
 
             if (goldError) throw goldError;
 
@@ -238,6 +248,36 @@ export function CharacterProvider({ children }: { children: React.ReactNode }) {
 
             if (error) throw error;
             setGold(newGoldValue);
+        } catch (err: any) {
+            setError(err.message);
+            throw err;
+        }
+    };
+
+    const spendGold = async (amount: number) => {
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) throw new Error('Not authenticated');
+
+            // Fetch latest gold to ensure we don't use stale state
+            const { data: profile, error: fetchError } = await supabase
+                .from('users')
+                .select('gold')
+                .eq('uuid', user.id)
+                .maybeSingle();
+
+            if (fetchError) throw fetchError;
+
+            const currentGold = profile?.gold || 0;
+            if (currentGold < amount) throw new Error('골드가 부족합니다.');
+
+            const newGold = currentGold - amount;
+            const { error: updateError } = await supabase
+                .from('users')
+                .upsert({ uuid: user.id, gold: newGold }, { onConflict: 'uuid' });
+
+            if (updateError) throw updateError;
+            setGold(newGold);
         } catch (err: any) {
             setError(err.message);
             throw err;
@@ -273,6 +313,7 @@ export function CharacterProvider({ children }: { children: React.ReactNode }) {
                 switchCharacter,
                 addRewards,
                 updateGold,
+                spendGold,
                 refresh: fetchUserData,
             }}
         >
