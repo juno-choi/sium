@@ -91,13 +91,13 @@ export default function ShopPage() {
                                 <div className="absolute top-0 right-0 w-32 h-32 bg-slate-50 rounded-bl-[4rem] -z-0 group-hover:bg-indigo-50 transition-colors" />
 
                                 <div className="relative z-10">
-                                    <div className="w-full aspect-square bg-slate-50 rounded-[2.5rem] flex items-center justify-center mb-8 group-hover:scale-105 transition-transform duration-500 shadow-inner overflow-hidden">
+                                    <div className="w-full aspect-square bg-slate-50 rounded-[2.5rem] flex items-center justify-center mb-8 group-hover:scale-105 transition-transform duration-500 shadow-inner overflow-hidden relative">
                                         {imageSrc ? (
                                             <Image
                                                 src={imageSrc}
                                                 alt={char.name}
                                                 fill
-                                                className="object-contain p-4"
+                                                className="object-contain p-8 object-center"
                                             />
                                         ) : (
                                             <span className="text-[8rem]">{char.base_image_url}</span>

@@ -86,7 +86,7 @@ export default function DashboardPage() {
                                 오늘의 팁
                             </h3>
                             <p className="text-slate-400 text-sm leading-relaxed mb-6">
-                                퀘스트를 완료하고 얻은 골드로 상점에서 멋진 옷을 사보세요. 더 높은 레벨은 더 희귀한 아이템의 시작입니다!
+                                퀘스트를 완료하고 얻은 골드로 상점에서 멋진 동료를 구해보세요!
                             </p>
                             <Link
                                 href="/shop"

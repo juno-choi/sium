@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCharacter } from '@/lib/hooks/useCharacter';
 import { Sparkles, Check, ArrowRight, Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
+import Image from 'next/image';
 
 const ITEMS_PER_PAGE = 6;
 
@@ -83,7 +84,7 @@ export default function CharacterSelectPage() {
                                 )}
 
                                 <div className="text-8xl mb-6 text-center transform group-hover:scale-110 transition-transform">
-                                    {char.base_image_url}
+                                    <Image src={`${char.base_image_url}`} alt={`${char.name}`} width={100} height={100} />
                                 </div>
 
                                 <h3 className="text-xl font-bold text-slate-900 mb-2 font-display">{char.name}</h3>

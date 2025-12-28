@@ -33,7 +33,7 @@ export default function Header({ user }: HeaderProps) {
         { name: '모험하기', href: '/dashboard', icon: Sword },
         { name: '퀘스트 관리', href: '/habits', icon: BookPlus },
         { name: '상점', href: '/shop', icon: ShoppingBag },
-        { name: '캐릭터 꾸미기', href: '/character', icon: Palette },
+        { name: '동료', href: '/character', icon: Palette },
     ];
 
     return (
@@ -184,7 +184,7 @@ export default function Header({ user }: HeaderProps) {
                                         onClick={() => setIsMenuOpen(false)}
                                     >
                                         <Palette className="w-5 h-5 text-indigo-500" />
-                                        <span>캐릭터 꾸미기</span>
+                                        <span>캐릭터</span>
                                     </Link>
                                     <Link
                                         href="/habits/new"

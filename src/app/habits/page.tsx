@@ -45,7 +45,7 @@ export default function HabitListPage() {
                             href="/habits/new"
                             className="text-indigo-600 font-bold hover:underline"
                         >
-                            첫 습관 만들러 가기 →
+                            첫 퀘스트 만들러 가기 →
                         </Link>
                     </div>
                 ) : (
