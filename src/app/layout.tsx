@@ -15,9 +15,9 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: 'Sium',
-  description: '귀여운 캐릭터와 함께 성장하는 습관 형성 앱',
+  description: '귀여운 캐릭터와 함께 성장하는 습관 형성',
   icons: {
-    icon: '/favicon.png',
+    icon: '/favicon.ico',
   },
 };
 
