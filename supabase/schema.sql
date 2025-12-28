@@ -2,8 +2,6 @@
 create extension if not exists "uuid-ossp";
 
 -- Reset (Drop existing tables if they exist)
-drop table if exists public.user_equipment;
-drop table if exists public.equipment_items;
 drop table if exists public.habit_logs;
 drop table if exists public.habits;
 drop table if exists public.user_characters;
@@ -29,12 +27,13 @@ create policy "Public profiles are viewable by everyone." on public.users for se
 create policy "Users can insert their own profile." on public.users for insert with check (auth.uid() = uuid);
 create policy "Users can update own profile." on public.users for update using (auth.uid() = uuid);
 
--- 2. Characters Master Table (Humanoid focus)
+-- 2. Characters Master Table (with Level Images)
 create table public.characters (
   id serial primary key,
   name varchar(50) not null,
   description text,
-  base_image_url varchar(255), -- "human_male", "human_female" etc.
+  base_image_url varchar(255),
+  level_images jsonb default '{}' not null, -- {"1": "img1.png", "10": "img10.png", "20": "img20.png"}
   price int default 0 not null,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
@@ -42,7 +41,7 @@ create table public.characters (
 alter table public.characters enable row level security;
 create policy "Characters are viewable by everyone." on public.characters for select using (true);
 
--- 3. User Characters (Selected character, progress, and appearance)
+-- 3. User Characters (Selected character, progress)
 create table public.user_characters (
   id uuid default uuid_generate_v4() primary key,
   user_id uuid references auth.users(id) on delete cascade not null,
@@ -61,58 +60,7 @@ create policy "Users can view own character progress." on public.user_characters
 create policy "Users can choose their character." on public.user_characters for insert with check (auth.uid() = user_id);
 create policy "Users can update own character progress." on public.user_characters for update using (auth.uid() = user_id);
 
--- 4. Equipment Items Master
-create table public.equipment_items (
-  id serial primary key,
-  name varchar(100) not null,
-  slot varchar(30) not null, -- 'hat', 'top', 'bottom', 'shoes', 'gloves', 'weapon'
-  image_url varchar(255),
-  price int not null default 0,
-  description text,
-  rarity varchar(20) default 'common' not null,
-  created_at timestamp with time zone default timezone('utc'::text, now()) not null
-);
-
-alter table public.equipment_items enable row level security;
-create policy "Equipment is viewable by everyone." on public.equipment_items for select using (true);
-
--- 5. User Owned Equipment (Linked to specific character)
-create table public.user_equipment (
-  id uuid default uuid_generate_v4() primary key,
-  user_character_id uuid references public.user_characters(id) on delete cascade not null,
-  item_id int references public.equipment_items(id) not null,
-  is_equipped boolean default false not null,
-  purchased_at timestamp with time zone default timezone('utc'::text, now()) not null,
-  unique(user_character_id, item_id)
-);
-
-alter table public.user_equipment enable row level security;
-create policy "Users can view own character equipment." on public.user_equipment for select using (
-  exists (
-    select 1 from public.user_characters 
-    where id = user_character_id and user_id = auth.uid()
-  )
-);
-create policy "Users can insert own character equipment." on public.user_equipment for insert with check (
-  exists (
-    select 1 from public.user_characters 
-    where id = user_character_id and user_id = auth.uid()
-  )
-);
-create policy "Users can update own character equipment." on public.user_equipment for update using (
-  exists (
-    select 1 from public.user_characters 
-    where id = user_character_id and user_id = auth.uid()
-  )
-);
-create policy "Users can delete own character equipment." on public.user_equipment for delete using (
-  exists (
-    select 1 from public.user_characters 
-    where id = user_character_id and user_id = auth.uid()
-  )
-);
-
--- 7. Habits Table
+-- 4. Habits Table
 create type habit_difficulty as enum ('easy', 'normal', 'hard');
 
 create table public.habits (
@@ -136,7 +84,7 @@ create table public.habits (
 alter table public.habits enable row level security;
 create policy "Users can manage own habits." on public.habits for all using (auth.uid() = user_id);
 
--- 8. Habit Logs (Now with Gold tracking)
+-- 5. Habit Logs (with Gold tracking)
 create table public.habit_logs (
   id uuid default uuid_generate_v4() primary key,
   habit_id uuid references public.habits(id) on delete cascade not null,
@@ -151,22 +99,13 @@ create table public.habit_logs (
 alter table public.habit_logs enable row level security;
 create policy "Users can view/insert/delete own logs." on public.habit_logs for all using (auth.uid() = user_id);
 
--- 9. Initial Seed Data
-insert into public.characters (name, description, base_image_url) values
-('전사', '강인한 체력과 용기를 가진 모험가입니다.', '🧑‍🚀'),
-('마법사', '신비로운 마력을 사용하는 지혜로운 탐구자입니다.', '🧙'),
-('궁수', '날렵한 몸놀림으로 목표를 꿰뚫는 사냥꾼입니다.', '🧝');
+-- 6. Initial Seed Data (Characters with Level Images)
+insert into public.characters (name, description, base_image_url, level_images) values
+('전사', '강인한 체력과 용기를 가진 모험가입니다.', 'warrior_lv1.png', '{"1": "warrior_lv1.png", "10": "warrior_lv10.png", "20": "warrior_lv20.png"}'),
+('마법사', '신비로운 마력을 사용하는 지혜로운 탐구자입니다.', 'mage_lv1.png', '{"1": "mage_lv1.png", "10": "mage_lv10.png", "20": "mage_lv20.png"}'),
+('궁수', '날렵한 몸놀림으로 목표를 꿰뚫는 사냥꾼입니다.', 'archer_lv1.png', '{"1": "archer_lv1.png", "10": "archer_lv10.png", "20": "archer_lv20.png"}');
 
--- Basic Equipment Items
-insert into public.equipment_items (name, slot, price, rarity, description, image_url) values
-('낡은 가죽 모자', 'hat', 100, 'common', '햇볕을 가려주는 평범한 가죽 모자입니다.', '👒'),
-('수련용 갑옷', 'top', 300, 'common', '기본적인 방어력을 갖춘 수련용 상의입니다.', '👕'),
-('튼튼한 바지', 'bottom', 200, 'common', '거친 모험에도 끄떡없는 바지입니다.', '👖'),
-('모험가의 장화', 'shoes', 150, 'common', '오래 걸어도 발이 편안한 장화입니다.', '👞'),
-('가죽 장갑', 'gloves', 100, 'common', '손을 보호해주는 튼튼한 가죽 장갑입니다.', '🧤'),
-('수련용 목검', 'weapon', 500, 'rare', '기초적인 무술 수련을 위한 튼튼한 목검입니다.', '🗡️');
-
--- 10. Functions & Triggers (Sync users)
+-- 7. Functions & Triggers (Sync users)
 create or replace function public.handle_new_user()
 returns trigger as $$
 begin

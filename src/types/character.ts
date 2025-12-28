@@ -3,6 +3,7 @@ export interface Character {
     name: string;
     description: string;
     base_image_url: string;
+    level_images?: Record<string, string> | null; // {"1": "img1.png", "10": "img10.png", "20": "img20.png"}
     price: number;
     created_at: string;
 }

@@ -2,8 +2,10 @@
 
 import { UserCharacter } from '@/types/character';
 import LevelProgress from './LevelProgress';
-import { Coins, Sparkles, User as UserIcon, ChevronRight } from 'lucide-react';
+import { Coins, Sparkles } from 'lucide-react';
 import { useCharacter } from '@/lib/hooks/useCharacter';
+import { getLevelImage } from '@/lib/utils/getLevelImage';
+import Image from 'next/image';
 
 interface CharacterStatusProps {
     userCharacter: UserCharacter;
@@ -11,9 +13,13 @@ interface CharacterStatusProps {
 
 export default function CharacterStatus({ userCharacter }: CharacterStatusProps) {
     const { character, current_xp, current_level } = userCharacter;
-    const { gold, userCharacters, switchCharacter } = useCharacter();
+    const { gold } = useCharacter();
 
     if (!character) return null;
+
+    // Get level-based image
+    const levelImage = getLevelImage(current_level, character.level_images);
+    const imageSrc = levelImage ? `${levelImage}` : null;
 
     return (
         <div className="space-y-6">
@@ -25,8 +31,17 @@ export default function CharacterStatus({ userCharacter }: CharacterStatusProps)
                 <div className="flex flex-col md:flex-row items-center gap-10 relative z-10">
                     {/* Character Visual */}
                     <div className="relative group">
-                        <div className="w-40 h-40 md:w-52 md:h-52 bg-gradient-to-br from-slate-50 to-indigo-50 rounded-[3rem] flex items-center justify-center text-8xl md:text-9xl shadow-inner animate-[float_4s_ease-in-out_infinite]">
-                            <span>{character.base_image_url}</span>
+                        <div className="w-40 h-40 md:w-52 md:h-52 bg-gradient-to-br from-slate-50 to-indigo-50 rounded-[3rem] flex items-center justify-center shadow-inner animate-[float_4s_ease-in-out_infinite] overflow-hidden">
+                            {imageSrc ? (
+                                <Image
+                                    src={imageSrc}
+                                    alt={character.name}
+                                    fill
+                                    className="object-contain p-4"
+                                />
+                            ) : (
+                                <span className="text-8xl md:text-9xl">{character.base_image_url}</span>
+                            )}
                         </div>
                         <div className="absolute -bottom-4 inset-x-0 mx-auto w-32 h-6 bg-slate-900/10 blur-xl rounded-full -z-10" />
 
@@ -70,7 +85,6 @@ export default function CharacterStatus({ userCharacter }: CharacterStatusProps)
                     </div>
                 </div>
             </div>
-
         </div>
     );
 }
