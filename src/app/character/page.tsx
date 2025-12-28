@@ -9,7 +9,7 @@ import { useState } from 'react';
 import { EquipmentSlot } from '@/types/equipment';
 
 export default function CharacterPage() {
-    const { character, loading: charLoading } = useCharacter();
+    const { character, userCharacters, switchCharacter, loading: charLoading } = useCharacter();
     const { equippedItems, toggleEquip, loading: equipLoading } = useEquipment();
     const { options, changeOption, loading: customLoading } = useCustomization();
     const { userItems, refresh: refreshShop } = useShop();
@@ -32,8 +32,30 @@ export default function CharacterPage() {
     return (
         <div className="min-h-screen bg-slate-50 py-12 px-4">
             <div className="max-w-6xl mx-auto">
-                <div className="flex flex-col lg:flex-row gap-10">
+                {/* Character Selection Bar */}
+                {userCharacters.length > 1 && (
+                    <div className="flex flex-wrap gap-4 mb-10 bg-white p-6 rounded-[2.5rem] border border-slate-100 shadow-sm">
+                        {userCharacters.map((uc) => (
+                            <button
+                                key={uc.id}
+                                onClick={() => switchCharacter(uc.id)}
+                                className={`flex items-center gap-3 px-6 py-3 rounded-2xl border-2 transition-all ${uc.id === character.id
+                                    ? 'bg-slate-900 border-slate-900 text-white shadow-lg'
+                                    : 'bg-white border-slate-100 text-slate-500 hover:border-indigo-200'
+                                    }`}
+                            >
+                                <span className="text-2xl">{uc.character?.base_image_url}</span>
+                                <div className="text-left">
+                                    <p className="text-[10px] font-bold opacity-70 uppercase">Level {uc.current_level}</p>
+                                    <p className="text-sm font-black font-display">{uc.character?.name}</p>
+                                </div>
+                                {uc.id === character.id && <Check className="w-4 h-4 text-indigo-400 ml-2" />}
+                            </button>
+                        ))}
+                    </div>
+                )}
 
+                <div className="flex flex-col lg:flex-row gap-10">
                     {/* Left Side: Character Preview */}
                     <div className="lg:w-2/5">
                         <div className="sticky top-24">
@@ -45,7 +67,7 @@ export default function CharacterPage() {
                                     <div className="flex items-center justify-between mb-8">
                                         <div>
                                             <h1 className="text-3xl font-black text-slate-900 font-display mb-1">캐릭터 설정</h1>
-                                            <p className="text-slate-500 font-medium">나만의 개성을 표현해보세요.</p>
+                                            <p className="text-slate-500 font-medium">{character.character?.name}님을 꾸며보세요.</p>
                                         </div>
                                         <div className="w-14 h-14 bg-indigo-600 rounded-2xl flex items-center justify-center text-white font-black text-xl shadow-lg rotate-3 group-hover:rotate-0 transition-transform">
                                             {character.current_level}
@@ -66,8 +88,8 @@ export default function CharacterPage() {
 
                                     <div className="space-y-4">
                                         <div className="flex items-center justify-between text-sm">
-                                            <span className="text-slate-400 font-bold uppercase tracking-widest">Character Name</span>
-                                            <span className="text-slate-900 font-black">{character.character?.name}</span>
+                                            <span className="text-slate-400 font-bold uppercase tracking-widest">Character ID</span>
+                                            <span className="text-slate-900 font-black">{character.id.slice(0, 8)}...</span>
                                         </div>
                                         <div className="w-full h-px bg-slate-100" />
                                         <div className="flex justify-between items-center bg-slate-50 p-4 rounded-2xl border border-slate-100">

@@ -3,6 +3,7 @@ export interface Character {
     name: string;
     description: string;
     base_image_url: string;
+    price: number;
     created_at: string;
 }
 
@@ -12,7 +13,7 @@ export interface UserCharacter {
     character_id: number;
     current_xp: number;
     current_level: number;
-    gold: number;
+    is_active: boolean;
 
     // Customization
     hair_style: string;
@@ -24,6 +25,15 @@ export interface UserCharacter {
 
     // Joined fields
     character?: Character;
+}
+
+export interface UserProfile {
+    id: number;
+    uuid: string;
+    email: string;
+    full_name: string;
+    avatar_url: string;
+    gold: number;
 }
 
 export interface CustomizationOption {

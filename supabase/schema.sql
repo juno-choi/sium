@@ -20,6 +20,7 @@ create table if not exists public.users (
   email text,
   full_name text,
   avatar_url text,
+  gold int default 0 not null,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
   updated_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
@@ -35,28 +36,30 @@ create table public.characters (
   name varchar(50) not null,
   description text,
   base_image_url varchar(255), -- "human_male", "human_female" etc.
+  price int default 0 not null,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
 alter table public.characters enable row level security;
 create policy "Characters are viewable by everyone." on public.characters for select using (true);
 
--- 3. User Characters (Selected character, progress, gold, and appearance)
+-- 3. User Characters (Selected character, progress, and appearance)
 create table public.user_characters (
   id uuid default uuid_generate_v4() primary key,
-  user_id uuid references auth.users(id) on delete cascade not null unique,
+  user_id uuid references auth.users(id) on delete cascade not null,
   character_id int references public.characters(id) not null,
   current_xp int default 0 not null,
   current_level int default 1 not null,
-  gold int default 0 not null,
+  is_active boolean default false not null,
   
   -- Customization
-  hair_style varchar(50) default 'plain' not null,
+  hair_style varchar(50) default 'short' not null,
   face_shape varchar(50) default 'smiling' not null,
   skin_color varchar(20) default '#FFDAB9' not null,
   
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
-  updated_at timestamp with time zone default timezone('utc'::text, now()) not null
+  updated_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  unique(user_id, character_id)
 );
 
 alter table public.user_characters enable row level security;
@@ -79,18 +82,41 @@ create table public.equipment_items (
 alter table public.equipment_items enable row level security;
 create policy "Equipment is viewable by everyone." on public.equipment_items for select using (true);
 
--- 5. User Owned Equipment
+-- 5. User Owned Equipment (Linked to specific character)
 create table public.user_equipment (
   id uuid default uuid_generate_v4() primary key,
-  user_id uuid references auth.users(id) on delete cascade not null,
+  user_character_id uuid references public.user_characters(id) on delete cascade not null,
   item_id int references public.equipment_items(id) not null,
   is_equipped boolean default false not null,
   purchased_at timestamp with time zone default timezone('utc'::text, now()) not null,
-  unique(user_id, item_id)
+  unique(user_character_id, item_id)
 );
 
 alter table public.user_equipment enable row level security;
-create policy "Users can view/manage own equipment." on public.user_equipment for all using (auth.uid() = user_id);
+create policy "Users can view own character equipment." on public.user_equipment for select using (
+  exists (
+    select 1 from public.user_characters 
+    where id = user_character_id and user_id = auth.uid()
+  )
+);
+create policy "Users can insert own character equipment." on public.user_equipment for insert with check (
+  exists (
+    select 1 from public.user_characters 
+    where id = user_character_id and user_id = auth.uid()
+  )
+);
+create policy "Users can update own character equipment." on public.user_equipment for update using (
+  exists (
+    select 1 from public.user_characters 
+    where id = user_character_id and user_id = auth.uid()
+  )
+);
+create policy "Users can delete own character equipment." on public.user_equipment for delete using (
+  exists (
+    select 1 from public.user_characters 
+    where id = user_character_id and user_id = auth.uid()
+  )
+);
 
 -- 6. Customization Options Master
 create table public.customization_options (

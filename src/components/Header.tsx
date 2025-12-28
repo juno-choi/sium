@@ -20,7 +20,7 @@ export default function Header({ user }: HeaderProps) {
     const [isProfileOpen, setIsProfileOpen] = useState(false);
     const router = useRouter();
     const pathname = usePathname();
-    const { character } = useCharacter();
+    const { character, gold } = useCharacter();
 
     const handleLogout = async () => {
         const supabase = createClient();
@@ -79,7 +79,7 @@ export default function Header({ user }: HeaderProps) {
                                     <div className="flex items-center space-x-1.5 px-3 py-1.5 bg-amber-50 rounded-xl border border-amber-100 mr-2">
                                         <Coins className="w-4 h-4 text-amber-500" />
                                         <span className="text-sm font-black text-amber-700 font-display">
-                                            {character.gold.toLocaleString()}
+                                            {gold.toLocaleString()}
                                         </span>
                                     </div>
                                 )}
@@ -153,7 +153,7 @@ export default function Header({ user }: HeaderProps) {
                                             <span className="text-sm font-bold text-amber-900">내 골드</span>
                                         </div>
                                         <span className="text-lg font-black text-amber-700 font-display">
-                                            {character.gold.toLocaleString()} G
+                                            {gold.toLocaleString()} G
                                         </span>
                                     </div>
                                 )}
