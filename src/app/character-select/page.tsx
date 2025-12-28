@@ -6,7 +6,7 @@ import { useCharacter } from '@/lib/hooks/useCharacter';
 import { Sparkles, Check, ArrowRight, Loader2 } from 'lucide-react';
 
 export default function CharacterSelectPage() {
-    const { availableCharacters, selectCharacter, loading: hookLoading, character } = useCharacter();
+    const { availableCharacters, selectCharacter, loading: hookLoading, character, userCharacters } = useCharacter();
     const [selectedId, setSelectedId] = useState<number | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const router = useRouter();
@@ -56,31 +56,40 @@ export default function CharacterSelectPage() {
                 </p>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-                    {availableCharacters.map((char) => (
-                        <button
-                            key={char.id}
-                            onClick={() => setSelectedId(char.id)}
-                            className={`relative group bg-white p-8 rounded-3xl border-2 transition-all duration-300 text-left hover:shadow-xl ${selectedId === char.id
-                                ? 'border-indigo-500 ring-4 ring-indigo-50 shadow-lg scale-105'
-                                : 'border-slate-100 hover:border-indigo-200'
-                                }`}
-                        >
-                            {selectedId === char.id && (
-                                <div className="absolute top-4 right-4 bg-indigo-600 text-white p-1 rounded-full">
-                                    <Check className="w-4 h-4" />
+                    {availableCharacters.map((char) => {
+                        const isOwned = userCharacters.some(uc => uc.character_id === char.id);
+                        return (
+                            <button
+                                key={char.id}
+                                onClick={() => setSelectedId(char.id)}
+                                className={`relative group bg-white p-8 rounded-3xl border-2 transition-all duration-300 text-left hover:shadow-xl ${selectedId === char.id
+                                    ? 'border-indigo-500 ring-4 ring-indigo-50 shadow-lg scale-105'
+                                    : 'border-slate-100 hover:border-indigo-200'
+                                    }`}
+                            >
+                                {selectedId === char.id && (
+                                    <div className="absolute top-4 right-4 bg-indigo-600 text-white p-1 rounded-full">
+                                        <Check className="w-4 h-4" />
+                                    </div>
+                                )}
+
+                                {isOwned && (
+                                    <div className="absolute top-4 left-4 bg-emerald-50 text-emerald-600 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border border-emerald-100">
+                                        보유 중
+                                    </div>
+                                )}
+
+                                <div className="text-8xl mb-6 text-center transform group-hover:scale-110 transition-transform">
+                                    {char.base_image_url}
                                 </div>
-                            )}
 
-                            <div className="text-8xl mb-6 text-center transform group-hover:scale-110 transition-transform">
-                                {char.base_image_url}
-                            </div>
-
-                            <h3 className="text-xl font-bold text-slate-900 mb-2 font-display">{char.name}</h3>
-                            <p className="text-slate-500 text-sm leading-relaxed">
-                                {char.description}
-                            </p>
-                        </button>
-                    ))}
+                                <h3 className="text-xl font-bold text-slate-900 mb-2 font-display">{char.name}</h3>
+                                <p className="text-slate-500 text-sm leading-relaxed">
+                                    {char.description}
+                                </p>
+                            </button>
+                        );
+                    })}
                 </div>
 
                 <button
@@ -95,7 +104,7 @@ export default function CharacterSelectPage() {
                         <Loader2 className="w-6 h-6 animate-spin mr-2" />
                     ) : (
                         <>
-                            이 친구와 시작하기
+                            {userCharacters.some(uc => uc.character_id === selectedId) ? '이 친구와 계속하기' : '이 친구와 시작하기'}
                             <ArrowRight className="ml-2 w-5 h-5" />
                         </>
                     )}

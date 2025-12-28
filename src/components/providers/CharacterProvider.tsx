@@ -45,8 +45,12 @@ export function CharacterProvider({ children }: { children: React.ReactNode }) {
 
     const fetchUserData = useCallback(async () => {
         try {
+            setLoading(true);
             const { data: { user } } = await supabase.auth.getUser();
             if (!user) {
+                setCharacter(null);
+                setUserCharacters([]);
+                setGold(0);
                 setLoading(false);
                 return;
             }
@@ -58,8 +62,13 @@ export function CharacterProvider({ children }: { children: React.ReactNode }) {
                 .eq('uuid', user.id)
                 .single();
 
-            if (profileError) throw profileError;
-            setGold(profile.gold || 0);
+            if (profileError) {
+                // Profile might not exist yet for new users
+                if (profileError.code !== 'PGRST116') throw profileError;
+                setGold(0);
+            } else {
+                setGold(profile.gold || 0);
+            }
 
             // 2. Fetch User Characters
             const { data: characters, error: charError } = await supabase
@@ -76,6 +85,7 @@ export function CharacterProvider({ children }: { children: React.ReactNode }) {
             setCharacter(active);
 
         } catch (err: any) {
+            console.error('Error fetching user data:', err);
             setError(err.message);
         } finally {
             setLoading(false);
@@ -93,8 +103,14 @@ export function CharacterProvider({ children }: { children: React.ReactNode }) {
                 .update({ is_active: false })
                 .eq('user_id', user.id);
 
-            // 2. Check if already owned
-            const existing = userCharacters.find(uc => uc.character_id === characterId);
+            // 2. Check if already owned (re-check state or fetch)
+            const { data: existingChars } = await supabase
+                .from('user_characters')
+                .select('*, character:characters(*)')
+                .eq('user_id', user.id)
+                .eq('character_id', characterId);
+
+            const existing = existingChars?.[0];
 
             if (existing) {
                 // Just activate it
@@ -229,11 +245,20 @@ export function CharacterProvider({ children }: { children: React.ReactNode }) {
     };
 
 
-
     useEffect(() => {
         fetchUserData();
         fetchAvailableCharacters();
-    }, [fetchUserData, fetchAvailableCharacters]);
+
+        // Listen for auth changes
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+            if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') {
+                fetchUserData();
+                fetchAvailableCharacters();
+            }
+        });
+
+        return () => subscription.unsubscribe();
+    }, [fetchUserData, fetchAvailableCharacters, supabase]);
 
     return (
         <CharacterContext.Provider
