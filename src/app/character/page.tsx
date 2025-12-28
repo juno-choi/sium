@@ -125,14 +125,14 @@ export default function CharacterPage() {
                                     <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Total {userCharacters.length}</span>
                                 </div>
 
-                                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 flex-1">
+                                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 flex-1 content-start">
                                     {userCharacters.slice((charPage - 1) * ITEMS_PER_PAGE, charPage * ITEMS_PER_PAGE).map((uc) => {
                                         const isActive = uc.id === character.id;
                                         return (
                                             <button
                                                 key={uc.id}
                                                 onClick={() => switchCharacter(uc.id)}
-                                                className={`relative p-6 rounded-3xl border-2 transition-all flex flex-col items-center gap-3 ${isActive ? 'border-indigo-600 bg-indigo-50/30' : 'border-slate-100 hover:border-slate-200'
+                                                className={`relative p-6 rounded-3xl border-2 transition-all flex flex-col items-center justify-center gap-3 aspect-[3/4] w-full ${isActive ? 'border-indigo-600 bg-indigo-50/30' : 'border-slate-100 hover:border-slate-200'
                                                     }`}
                                             >
                                                 <div className="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center text-5xl shadow-inner">
@@ -190,7 +190,7 @@ export default function CharacterPage() {
                                 </div>
 
                                 <div className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-xl shadow-slate-200/50 min-h-[500px] flex flex-col">
-                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 flex-1">
+                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 flex-1 content-start">
                                         {userItems
                                             .filter(ui => ui.item?.slot === activeSubTab)
                                             .slice((equipPage - 1) * ITEMS_PER_PAGE, equipPage * ITEMS_PER_PAGE)
@@ -203,7 +203,7 @@ export default function CharacterPage() {
                                                             await toggleEquip(ui.id, activeSubTab as EquipmentSlot, isEquipped);
                                                             refreshShop();
                                                         }}
-                                                        className={`relative p-6 rounded-3xl border-2 transition-all flex flex-col items-center gap-3 ${isEquipped ? 'border-indigo-600 bg-indigo-50/30' : 'border-slate-100 hover:border-slate-200'
+                                                        className={`relative p-6 rounded-3xl border-2 transition-all flex flex-col items-center justify-center gap-3 aspect-square w-full ${isEquipped ? 'border-indigo-600 bg-indigo-50/30' : 'border-slate-100 hover:border-slate-200'
                                                             }`}
                                                     >
                                                         <div className="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center text-4xl shadow-inner">

@@ -74,7 +74,8 @@ export function CharacterProvider({ children }: { children: React.ReactNode }) {
             const { data: characters, error: charError } = await supabase
                 .from('user_characters')
                 .select('*, character:characters(*)')
-                .eq('user_id', user.id);
+                .eq('user_id', user.id)
+                .order('created_at', { ascending: true });
 
             if (charError) throw charError;
 
