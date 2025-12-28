@@ -2,7 +2,7 @@
 
 import { useHabits } from '@/lib/hooks/useHabits';
 import HabitCard from '@/components/habits/HabitCard';
-import { Plus, Loader2, Target, Search } from 'lucide-react';
+import { Plus, Loader2, Target, Search, Sword } from 'lucide-react';
 import Link from 'next/link';
 
 export default function HabitListPage() {
