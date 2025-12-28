@@ -13,8 +13,7 @@ interface CharacterContextType {
     error: string | null;
     selectCharacter: (characterId: number) => Promise<UserCharacter>;
     switchCharacter: (userCharacterId: string) => Promise<void>;
-    addRewards: (xp: number, gold: number) => Promise<{ data: UserCharacter; leveledUp: boolean }>;
-    updateAppearance: (appearance: Partial<Pick<UserCharacter, 'hair_style' | 'face_shape' | 'skin_color'>>) => Promise<UserCharacter>;
+    addRewards: (xp: number, earnedGold: number) => Promise<{ data: UserCharacter; leveledUp: boolean }>;
     updateGold: (newGold: number) => Promise<void>;
     refresh: () => Promise<void>;
 }
@@ -120,9 +119,6 @@ export function CharacterProvider({ children }: { children: React.ReactNode }) {
                         current_xp: 0,
                         current_level: 1,
                         is_active: true,
-                        hair_style: 'short',
-                        face_shape: 'smiling',
-                        skin_color: '#FFDAB9',
                     })
                     .select('*, character:characters(*)')
                     .single();
@@ -232,29 +228,7 @@ export function CharacterProvider({ children }: { children: React.ReactNode }) {
         }
     };
 
-    const updateAppearance = async (appearance: Partial<Pick<UserCharacter, 'hair_style' | 'face_shape' | 'skin_color'>>) => {
-        if (!character) throw new Error('No character selected');
 
-        try {
-            const { data, error } = await supabase
-                .from('user_characters')
-                .update({
-                    ...appearance,
-                    updated_at: new Date().toISOString(),
-                })
-                .eq('id', character.id)
-                .select('*, character:characters(*)')
-                .single();
-
-            if (error) throw error;
-            setCharacter(data);
-            setUserCharacters(prev => prev.map(c => c.id === data.id ? data : c));
-            return data;
-        } catch (err: any) {
-            setError(err.message);
-            throw err;
-        }
-    };
 
     useEffect(() => {
         fetchUserData();
@@ -273,7 +247,6 @@ export function CharacterProvider({ children }: { children: React.ReactNode }) {
                 selectCharacter,
                 switchCharacter,
                 addRewards,
-                updateAppearance,
                 updateGold,
                 refresh: fetchUserData,
             }}

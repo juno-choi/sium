@@ -13,7 +13,7 @@ export function useEquipment() {
         bottom: null,
         shoes: null,
         gloves: null,
-        face_accessory: null,
+        weapon: null,
     });
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -40,7 +40,7 @@ export function useEquipment() {
                 bottom: null,
                 shoes: null,
                 gloves: null,
-                face_accessory: null,
+                weapon: null,
             };
 
             data?.forEach((ue: any) => {

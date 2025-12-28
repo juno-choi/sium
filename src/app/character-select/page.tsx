@@ -1,15 +1,22 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCharacter } from '@/lib/hooks/useCharacter';
 import { Sparkles, Check, ArrowRight, Loader2 } from 'lucide-react';
 
 export default function CharacterSelectPage() {
-    const { availableCharacters, selectCharacter, loading: hookLoading } = useCharacter();
+    const { availableCharacters, selectCharacter, loading: hookLoading, character } = useCharacter();
     const [selectedId, setSelectedId] = useState<number | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const router = useRouter();
+
+    // Redirect to dashboard if character already exists
+    useEffect(() => {
+        if (!hookLoading && character) {
+            router.push('/dashboard');
+        }
+    }, [hookLoading, character, router]);
 
     const handleSelect = async () => {
         if (!selectedId) return;
@@ -24,7 +31,7 @@ export default function CharacterSelectPage() {
         }
     };
 
-    if (hookLoading) {
+    if (hookLoading || character) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-slate-50">
                 <Loader2 className="w-8 h-8 text-indigo-600 animate-spin" />
@@ -54,8 +61,8 @@ export default function CharacterSelectPage() {
                             key={char.id}
                             onClick={() => setSelectedId(char.id)}
                             className={`relative group bg-white p-8 rounded-3xl border-2 transition-all duration-300 text-left hover:shadow-xl ${selectedId === char.id
-                                    ? 'border-indigo-500 ring-4 ring-indigo-50 shadow-lg scale-105'
-                                    : 'border-slate-100 hover:border-indigo-200'
+                                ? 'border-indigo-500 ring-4 ring-indigo-50 shadow-lg scale-105'
+                                : 'border-slate-100 hover:border-indigo-200'
                                 }`}
                         >
                             {selectedId === char.id && (
@@ -80,8 +87,8 @@ export default function CharacterSelectPage() {
                     onClick={handleSelect}
                     disabled={!selectedId || isSubmitting}
                     className={`inline-flex items-center px-12 py-4 rounded-2xl text-lg font-bold transition-all shadow-lg ${selectedId && !isSubmitting
-                            ? 'bg-indigo-600 text-white hover:bg-indigo-700 hover:shadow-indigo-200 -translate-y-1'
-                            : 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                        ? 'bg-indigo-600 text-white hover:bg-indigo-700 hover:shadow-indigo-200 -translate-y-1'
+                        : 'bg-slate-200 text-slate-400 cursor-not-allowed'
                         }`}
                 >
                     {isSubmitting ? (

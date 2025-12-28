@@ -10,7 +10,7 @@ interface CharacterStatusProps {
 }
 
 export default function CharacterStatus({ userCharacter }: CharacterStatusProps) {
-    const { character, current_xp, current_level, hair_style, face_shape, skin_color } = userCharacter;
+    const { character, current_xp, current_level } = userCharacter;
     const { gold, userCharacters, switchCharacter } = useCharacter();
 
     if (!character) return null;
@@ -26,7 +26,7 @@ export default function CharacterStatus({ userCharacter }: CharacterStatusProps)
                     {/* Character Visual */}
                     <div className="relative group">
                         <div className="w-40 h-40 md:w-52 md:h-52 bg-gradient-to-br from-slate-50 to-indigo-50 rounded-[3rem] flex items-center justify-center text-8xl md:text-9xl shadow-inner animate-[float_4s_ease-in-out_infinite]">
-                            <span style={{ color: skin_color }}>{character.base_image_url}</span>
+                            <span>{character.base_image_url}</span>
                         </div>
                         <div className="absolute -bottom-4 inset-x-0 mx-auto w-32 h-6 bg-slate-900/10 blur-xl rounded-full -z-10" />
 
@@ -45,9 +45,6 @@ export default function CharacterStatus({ userCharacter }: CharacterStatusProps)
                                     <h2 className="text-4xl font-black text-slate-900 font-display">
                                         {character.name}
                                     </h2>
-                                    <div className="bg-slate-100 px-3 py-1 rounded-full text-xs font-bold text-slate-500">
-                                        {hair_style} 헤어
-                                    </div>
                                 </div>
                                 <p className="text-slate-500 font-medium flex items-center gap-1.5">
                                     <Sparkles className="w-4 h-4 text-indigo-400" />

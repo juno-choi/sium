@@ -1,4 +1,4 @@
-export type EquipmentSlot = 'hat' | 'top' | 'bottom' | 'shoes' | 'gloves' | 'face_accessory';
+export type EquipmentSlot = 'hat' | 'top' | 'bottom' | 'shoes' | 'gloves' | 'weapon';
 
 export interface EquipmentItem {
     id: number;

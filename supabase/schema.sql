@@ -4,7 +4,6 @@ create extension if not exists "uuid-ossp";
 -- Reset (Drop existing tables if they exist)
 drop table if exists public.user_equipment;
 drop table if exists public.equipment_items;
-drop table if exists public.customization_options;
 drop table if exists public.habit_logs;
 drop table if exists public.habits;
 drop table if exists public.user_characters;
@@ -52,11 +51,6 @@ create table public.user_characters (
   current_level int default 1 not null,
   is_active boolean default false not null,
   
-  -- Customization
-  hair_style varchar(50) default 'short' not null,
-  face_shape varchar(50) default 'smiling' not null,
-  skin_color varchar(20) default '#FFDAB9' not null,
-  
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
   updated_at timestamp with time zone default timezone('utc'::text, now()) not null,
   unique(user_id, character_id)
@@ -71,7 +65,7 @@ create policy "Users can update own character progress." on public.user_characte
 create table public.equipment_items (
   id serial primary key,
   name varchar(100) not null,
-  slot varchar(30) not null, -- 'hat', 'top', 'bottom', 'shoes', 'gloves', 'face_accessory'
+  slot varchar(30) not null, -- 'hat', 'top', 'bottom', 'shoes', 'gloves', 'weapon'
   image_url varchar(255),
   price int not null default 0,
   description text,
@@ -117,19 +111,6 @@ create policy "Users can delete own character equipment." on public.user_equipme
     where id = user_character_id and user_id = auth.uid()
   )
 );
-
--- 6. Customization Options Master
-create table public.customization_options (
-  id serial primary key,
-  category varchar(20) not null, -- 'hair', 'face', 'skin'
-  name varchar(50) not null,
-  value varchar(100) not null,
-  price int default 0 not null,
-  is_default boolean default false not null
-);
-
-alter table public.customization_options enable row level security;
-create policy "Options viewable by everyone." on public.customization_options for select using (true);
 
 -- 7. Habits Table
 create type habit_difficulty as enum ('easy', 'normal', 'hard');
@@ -183,18 +164,7 @@ insert into public.equipment_items (name, slot, price, rarity, description, imag
 ('튼튼한 바지', 'bottom', 200, 'common', '거친 모험에도 끄떡없는 바지입니다.', '👖'),
 ('모험가의 장화', 'shoes', 150, 'common', '오래 걸어도 발이 편안한 장화입니다.', '👞'),
 ('가죽 장갑', 'gloves', 100, 'common', '손을 보호해주는 튼튼한 가죽 장갑입니다.', '🧤'),
-('멋진 안경', 'face_accessory', 500, 'rare', '지적인 느낌을 주는 금테 안경입니다.', '👓');
-
--- Customization Options
-insert into public.customization_options (category, name, value, price, is_default) values
-('hair', '숏컷', 'short', 0, true),
-('hair', '롱헤어', 'long', 500, false),
-('hair', '모히칸', 'mohawk', 800, false),
-('face', '웃는 얼굴', 'smiling', 0, true),
-('face', '진지한 얼굴', 'serious', 300, false),
-('skin', '살구색', '#FFDAB9', 0, true),
-('skin', '흰 피부', '#FFFFFF', 1000, false),
-('skin', '그을린 피부', '#D2B48C', 500, false);
+('수련용 목검', 'weapon', 500, 'rare', '기초적인 무술 수련을 위한 튼튼한 목검입니다.', '🗡️');
 
 -- 10. Functions & Triggers (Sync users)
 create or replace function public.handle_new_user()

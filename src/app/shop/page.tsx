@@ -12,7 +12,7 @@ const slotLabels: Record<string, string> = {
     bottom: '하의',
     shoes: '신발',
     gloves: '장갑',
-    face_accessory: '얼굴장식',
+    weapon: '무기',
 };
 
 export default function ShopPage() {

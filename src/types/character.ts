@@ -15,11 +15,6 @@ export interface UserCharacter {
     current_level: number;
     is_active: boolean;
 
-    // Customization
-    hair_style: string;
-    face_shape: string;
-    skin_color: string;
-
     created_at: string;
     updated_at: string;
 
@@ -34,13 +29,4 @@ export interface UserProfile {
     full_name: string;
     avatar_url: string;
     gold: number;
-}
-
-export interface CustomizationOption {
-    id: number;
-    category: 'hair' | 'face' | 'skin';
-    name: string;
-    value: string;
-    price: number;
-    is_default: boolean;
 }
