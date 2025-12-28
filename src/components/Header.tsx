@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import {
     User, LogOut, Menu, X, Sword, PlusCircle, BookPlus,
-    ShoppingBag, Palette, Coins
+    ShoppingBag, Palette, Coins, UserPen
 } from 'lucide-react';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 import { createClient } from '@/lib/supabase/client';
@@ -33,7 +33,7 @@ export default function Header({ user }: HeaderProps) {
         { name: '모험하기', href: '/dashboard', icon: Sword },
         { name: '퀘스트 관리', href: '/habits', icon: BookPlus },
         { name: '상점', href: '/shop', icon: ShoppingBag },
-        { name: '동료', href: '/character', icon: Palette },
+        { name: '동료', href: '/character', icon: UserPen },
     ];
 
     return (
