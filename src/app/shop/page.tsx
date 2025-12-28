@@ -77,7 +77,8 @@ export default function ShopPage() {
                 </div>
 
                 {/* Character Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {/* Character Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
                     {shopCharacters.map((char) => {
                         const isOwned = ownedCharacterIds.has(char.id);
                         const canAfford = gold >= char.price;
@@ -86,12 +87,12 @@ export default function ShopPage() {
                         return (
                             <div
                                 key={char.id}
-                                className="bg-white rounded-[3rem] border border-slate-100 shadow-sm hover:shadow-2xl transition-all p-10 flex flex-col group relative overflow-hidden"
+                                className="bg-white rounded-[3rem] border border-slate-100 shadow-sm hover:shadow-2xl transition-all p-6 md:p-10 flex flex-col group relative overflow-hidden"
                             >
                                 <div className="absolute top-0 right-0 w-32 h-32 bg-slate-50 rounded-bl-[4rem] -z-0 group-hover:bg-indigo-50 transition-colors" />
 
                                 <div className="relative z-10">
-                                    <div className="w-full aspect-square bg-slate-50 rounded-[2.5rem] flex items-center justify-center mb-8 group-hover:scale-105 transition-transform duration-500 shadow-inner overflow-hidden relative">
+                                    <div className="w-full aspect-square bg-slate-50 rounded-[2.5rem] flex items-center justify-center mb-6 md:mb-8 group-hover:scale-105 transition-transform duration-500 shadow-inner overflow-hidden relative">
                                         {imageSrc ? (
                                             <Image
                                                 src={imageSrc}
@@ -104,7 +105,7 @@ export default function ShopPage() {
                                         )}
                                     </div>
 
-                                    <h3 className="text-3xl font-black text-slate-900 mb-2 font-display">{char.name}</h3>
+                                    <h3 className="text-2xl md:text-3xl font-black text-slate-900 mb-2 font-display">{char.name}</h3>
                                     <p className="text-slate-500 font-medium leading-relaxed mb-8 h-12 line-clamp-2">
                                         {char.description}
                                     </p>

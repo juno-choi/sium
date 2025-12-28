@@ -25,13 +25,22 @@ export default function HabitListPage() {
                         <p className="text-slate-500">지금까지 설정한 모든 퀘스트를 관리할 수 있습니다.</p>
                     </div>
 
-                    <Link
-                        href="/habits/new"
-                        className="inline-flex items-center px-8 py-4 bg-indigo-600 text-white rounded-2xl font-bold shadow-lg shadow-indigo-100 hover:bg-indigo-700 hover:-translate-y-1 transition-all"
-                    >
-                        <Plus className="w-5 h-5 mr-2" />
-                        퀘스트 추가하기
-                    </Link>
+                    <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
+                        <Link
+                            href="/dashboard"
+                            className="inline-flex items-center justify-center px-8 py-4 bg-white text-slate-700 rounded-2xl font-bold border border-slate-200 hover:bg-slate-50 hover:-translate-y-1 transition-all w-full sm:w-auto"
+                        >
+                            <Sword className="w-5 h-5 mr-2" />
+                            모험하기
+                        </Link>
+                        <Link
+                            href="/habits/new"
+                            className="inline-flex items-center justify-center px-8 py-4 bg-indigo-600 text-white rounded-2xl font-bold shadow-lg shadow-indigo-100 hover:bg-indigo-700 hover:-translate-y-1 transition-all w-full sm:w-auto"
+                        >
+                            <Plus className="w-5 h-5 mr-2" />
+                            퀘스트 추가하기
+                        </Link>
+                    </div>
                 </div>
 
                 {habits.length === 0 ? (

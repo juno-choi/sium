@@ -179,14 +179,6 @@ export default function Header({ user }: HeaderProps) {
                                 </div>
                                 <div className="px-4 space-y-2">
                                     <Link
-                                        href="/character"
-                                        className="flex items-center justify-center space-x-2 w-full py-3 bg-white border border-slate-200 text-slate-700 rounded-2xl font-bold"
-                                        onClick={() => setIsMenuOpen(false)}
-                                    >
-                                        <Palette className="w-5 h-5 text-indigo-500" />
-                                        <span>캐릭터</span>
-                                    </Link>
-                                    <Link
                                         href="/habits/new"
                                         className="flex items-center justify-center space-x-2 w-full py-3 bg-indigo-600 text-white rounded-2xl font-bold shadow-lg shadow-indigo-100"
                                         onClick={() => setIsMenuOpen(false)}
