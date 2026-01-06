@@ -2,10 +2,15 @@ import { createClient } from '@/lib/supabase/server';
 import Link from 'next/link';
 import { Sword, Sparkles, ArrowRight, Shield, Coins } from 'lucide-react';
 import Image from 'next/image';
+import { redirect } from 'next/navigation';
 
 export default async function LandingPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
+
+  if (user) {
+    redirect('/dashboard');
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-[#0f172a] text-slate-200">
