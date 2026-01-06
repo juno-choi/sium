@@ -184,14 +184,17 @@ export function CharacterProvider({ children }: { children: React.ReactNode }) {
             if (!user) throw new Error('Not authenticated');
 
             // 1. Update Character XP
-            const newXP = character.current_xp + xp;
-            const nextLevelThreshold = character.current_level * 100;
             let newLevel = character.current_level;
-            let finalXP = newXP;
+            let finalXP = character.current_xp + xp;
 
-            if (newXP >= nextLevelThreshold) {
-                newLevel += 1;
-                finalXP = newXP - nextLevelThreshold;
+            while (true) {
+                const nextLevelThreshold = newLevel * 100;
+                if (finalXP >= nextLevelThreshold) {
+                    finalXP -= nextLevelThreshold;
+                    newLevel += 1;
+                } else {
+                    break;
+                }
             }
 
             const { data: charData, error: charError } = await supabase

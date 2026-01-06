@@ -102,8 +102,8 @@ export function useDailyHabits() {
             const dateStr = getTodayDateStr();
 
             // Rewards
-            const xpTable: Record<HabitDifficulty, number> = { easy: 10, normal: 20, hard: 35 };
-            const goldTable: Record<HabitDifficulty, number> = { easy: 100, normal: 200, hard: 350 };
+            const xpTable: Record<HabitDifficulty, number> = { easy: 1000, normal: 2000, hard: 3500 };
+            const goldTable: Record<HabitDifficulty, number> = { easy: 1000, normal: 2000, hard: 3500 };
 
             const xpEarned = xpTable[difficulty];
             const goldEarned = goldTable[difficulty];
