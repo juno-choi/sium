@@ -109,7 +109,7 @@ export default function ShopPage() {
                                         {/* Preview Button */}
                                         <button
                                             onClick={() => setPreviewCharacter(char)}
-                                            className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm text-slate-700 px-4 py-2 rounded-2xl font-bold text-sm shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-indigo-600 hover:text-white flex items-center gap-2"
+                                            className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm text-slate-700 px-4 py-2 rounded-2xl font-bold text-sm shadow-lg opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300 hover:bg-indigo-600 hover:text-white flex items-center gap-2"
                                         >
                                             <Eye className="w-4 h-4" />
                                             미리보기

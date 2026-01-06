@@ -98,7 +98,7 @@ export default function CharacterSelectPage() {
                                             e.stopPropagation();
                                             setPreviewCharacter(char);
                                         }}
-                                        className="absolute -top-2 -right-2 bg-white/90 backdrop-blur-sm text-slate-700 p-2 rounded-xl shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-indigo-600 hover:text-white"
+                                        className="absolute -top-2 -right-2 bg-white/90 backdrop-blur-sm text-slate-700 p-2 rounded-xl shadow-lg opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300 hover:bg-indigo-600 hover:text-white"
                                     >
                                         <Eye className="w-4 h-4" />
                                     </button>
