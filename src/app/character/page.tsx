@@ -1,10 +1,11 @@
 'use client';
 
 import { useCharacter } from '@/lib/hooks/useCharacter';
-import { Loader2, ChevronRight, Check, Users as UsersIcon, ChevronLeft } from 'lucide-react';
+import { Loader2, ChevronRight, Check, Users as UsersIcon, ChevronLeft, Sparkles } from 'lucide-react';
 import { useState } from 'react';
 import Image from 'next/image';
 import { getLevelImage } from '@/lib/utils/getLevelImage';
+import Link from 'next/link';
 
 const ITEMS_PER_PAGE = 6;
 
@@ -20,7 +21,34 @@ export default function CharacterPage() {
         );
     }
 
-    if (!character) return null;
+    if (!character) {
+        return (
+            <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 p-4 text-center">
+                <div className="relative mb-8">
+                    <div className="w-32 h-32 bg-indigo-100 rounded-[2.5rem] flex items-center justify-center rotate-3 animate-[float_3s_ease-in-out_infinite]">
+                        <UsersIcon className="w-16 h-16 text-indigo-600 -rotate-3" />
+                    </div>
+                    <div className="absolute -top-2 -right-2 w-10 h-10 bg-amber-100 rounded-2xl flex items-center justify-center animate-pulse">
+                        <Sparkles className="w-6 h-6 text-amber-500" />
+                    </div>
+                </div>
+
+                <h1 className="text-3xl font-black text-slate-900 mb-3 font-display">동료를 기다리고 있어요!</h1>
+                <p className="text-slate-500 mb-10 font-medium leading-relaxed max-w-sm">
+                    아직 함께할 동료가 없네요.<br />
+                    <span className="text-indigo-600 font-bold">모험하기</span>를 눌러 첫 번째 캐릭터를 선택해주세요!
+                </p>
+
+                <Link
+                    href="/character-select"
+                    className="group inline-flex items-center gap-3 px-10 py-5 bg-indigo-600 text-white rounded-[2rem] font-bold shadow-xl shadow-indigo-100 hover:bg-slate-900 hover:-translate-y-1 transition-all"
+                >
+                    <span>첫 캐릭터 선택하기</span>
+                    <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </Link>
+            </div>
+        );
+    }
 
     // Get current level image
     const currentImage = getLevelImage(character.current_level, character.character?.level_images);
