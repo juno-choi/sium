@@ -41,7 +41,7 @@ export default function CharacterPage() {
                                     <div className="flex items-center justify-between mb-8">
                                         <div>
                                             <h1 className="text-3xl font-black text-slate-900 font-display mb-1">캐릭터 설정</h1>
-                                            <p className="text-slate-500 font-medium">{character.character?.name}님의 정보입니다.</p>
+                                            <p className="text-slate-500 font-medium">{character.character?.name} 정보</p>
                                         </div>
                                         <div className="w-14 h-14 bg-indigo-600 rounded-2xl flex items-center justify-center text-white font-black text-xl shadow-lg rotate-3 group-hover:rotate-0 transition-transform">
                                             {character.current_level}
@@ -63,10 +63,6 @@ export default function CharacterPage() {
                                     </div>
 
                                     <div className="space-y-4">
-                                        <div className="flex items-center justify-between text-sm">
-                                            <span className="text-slate-400 font-bold uppercase tracking-widest">Character ID</span>
-                                            <span className="text-slate-900 font-black">{character.id.slice(0, 8)}...</span>
-                                        </div>
                                         <div className="w-full h-px bg-slate-100" />
                                         <div className="flex items-center justify-between text-sm">
                                             <span className="text-slate-400 font-bold uppercase tracking-widest">Level</span>

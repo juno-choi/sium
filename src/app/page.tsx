@@ -113,7 +113,7 @@ export default async function LandingPage() {
 
                 <div className="flex-1 flex items-center justify-center relative z-10">
                   <div className="text-[12rem] animate-[float_4s_ease-in-out_infinite]">
-                    <Image src="https://mskfbcucjqkqaiwjmsry.supabase.co/storage/v1/object/public/characters/worrior/worrior_20.png" alt="worrior" width={300} height={300} />
+                    <Image src="https://mskfbcucjqkqaiwjmsry.supabase.co/storage/v1/object/public/characters/gumiho/gumiho_20_00.png" alt="worrior" width={300} height={300} />
                   </div>
                 </div>
 
