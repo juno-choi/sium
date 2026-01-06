@@ -3,6 +3,7 @@
 import { useCharacter } from '@/lib/hooks/useCharacter';
 import CharacterStatus from '@/components/character/CharacterStatus';
 import TodoList from '@/components/todo/TodoList';
+import DailyHabitList from '@/components/daily-habit/DailyHabitList';
 import LevelUpModal from '@/components/character/LevelUpModal';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState, useRef } from 'react';
@@ -75,6 +76,7 @@ export default function DashboardPage() {
                     {/* Daily Tasks Section */}
                     <section className="lg:col-span-2 bg-white rounded-[3rem] p-8 md:p-10 border border-slate-100 shadow-2xl shadow-slate-200/20">
                         <TodoList />
+                        <DailyHabitList />
                     </section>
 
                     {/* Sidebar Info/Tips */}

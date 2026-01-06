@@ -38,7 +38,7 @@ export default function HabitListPage() {
                             className="inline-flex items-center justify-center px-8 py-4 bg-indigo-600 text-white rounded-2xl font-bold shadow-lg shadow-indigo-100 hover:bg-indigo-700 hover:-translate-y-1 transition-all w-full sm:w-auto"
                         >
                             <Plus className="w-5 h-5 mr-2" />
-                            퀘스트 추가하기
+                            반복 퀘스트 추가하기
                         </Link>
                     </div>
                 </div>
