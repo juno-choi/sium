@@ -3,8 +3,10 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCharacter } from '@/lib/hooks/useCharacter';
-import { Sparkles, Check, ArrowRight, Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Sparkles, Check, ArrowRight, Loader2, ChevronLeft, ChevronRight, Eye } from 'lucide-react';
 import Image from 'next/image';
+import CharacterPreviewModal from '@/components/shop/CharacterPreviewModal';
+import { Character } from '@/types/character';
 
 const ITEMS_PER_PAGE = 6;
 
@@ -13,6 +15,7 @@ export default function CharacterSelectPage() {
     const [selectedId, setSelectedId] = useState<number | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
+    const [previewCharacter, setPreviewCharacter] = useState<Character | null>(null);
     const router = useRouter();
 
     // Only show specific starter characters (IDs 1, 2, 3)
@@ -66,10 +69,10 @@ export default function CharacterSelectPage() {
                     {filteredCharacters.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE).map((char) => {
                         const isOwned = userCharacters.some(uc => uc.character_id === char.id);
                         return (
-                            <button
+                            <div
                                 key={char.id}
                                 onClick={() => setSelectedId(char.id)}
-                                className={`relative group bg-white p-8 rounded-3xl border-2 transition-all duration-300 text-left hover:shadow-xl ${selectedId === char.id
+                                className={`relative group bg-white p-8 rounded-3xl border-2 transition-all duration-300 text-left hover:shadow-xl cursor-pointer ${selectedId === char.id
                                     ? 'border-indigo-500 ring-4 ring-indigo-50 shadow-lg scale-105'
                                     : 'border-slate-100 hover:border-indigo-200'
                                     }`}
@@ -86,15 +89,26 @@ export default function CharacterSelectPage() {
                                     </div>
                                 )}
 
-                                <div className="text-8xl mb-6 text-center transform group-hover:scale-110 transition-transform">
+                                <div className="text-8xl mb-6 text-center transform group-hover:scale-110 transition-transform relative">
                                     <Image src={`${char.base_image_url}`} alt={`${char.name}`} width={100} height={100} />
+
+                                    {/* Preview Button */}
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setPreviewCharacter(char);
+                                        }}
+                                        className="absolute -top-2 -right-2 bg-white/90 backdrop-blur-sm text-slate-700 p-2 rounded-xl shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-indigo-600 hover:text-white"
+                                    >
+                                        <Eye className="w-4 h-4" />
+                                    </button>
                                 </div>
 
                                 <h3 className="text-xl font-bold text-slate-900 mb-2 font-display">{char.name}</h3>
                                 <p className="text-slate-500 text-sm leading-relaxed">
                                     {char.description}
                                 </p>
-                            </button>
+                            </div>
                         );
                     })}
                 </div>
@@ -140,6 +154,14 @@ export default function CharacterSelectPage() {
                     )}
                 </button>
             </div>
+
+            {/* Character Preview Modal */}
+            {previewCharacter && (
+                <CharacterPreviewModal
+                    character={previewCharacter}
+                    onClose={() => setPreviewCharacter(null)}
+                />
+            )}
         </div>
     );
 }
