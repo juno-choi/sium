@@ -25,7 +25,7 @@ export default function DailyHabitList() {
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                     <Sparkles className="w-5 h-5 text-violet-600" />
-                    <h3 className="text-lg font-bold text-slate-900 font-display">오늘의 일일 퀘스트</h3>
+                    <h3 className="text-lg font-bold text-slate-900 font-display">일일 퀘스트</h3>
                 </div>
                 {totalCount > 0 && (
                     <span className="text-sm font-bold text-slate-500">
