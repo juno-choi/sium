@@ -57,123 +57,97 @@ export default function CharacterPage() {
     return (
         <div className="min-h-screen bg-slate-50 py-12 px-4">
             <div className="max-w-6xl mx-auto">
-                <div className="flex flex-col lg:flex-row gap-10">
-                    {/* Left Side: Character Preview */}
-                    <div className="lg:w-2/5">
-                        <div className="sticky top-24">
-                            <div className="bg-white rounded-[3rem] p-10 border border-slate-100 shadow-2xl shadow-indigo-100/30 overflow-hidden relative group">
-                                {/* Background Decor */}
-                                <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-50 rounded-bl-[4rem] -z-0 group-hover:w-40 group-hover:h-40 transition-all duration-700" />
+                <div className="space-y-10">
+                    {/* Page Header */}
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                        <div>
+                            <div className="flex items-center gap-3 mb-2">
+                                <UsersIcon className="w-8 h-8 text-indigo-600" />
+                                <h1 className="text-4xl font-black text-slate-900 font-display">나의 동료들</h1>
+                            </div>
+                            <p className="text-slate-500 font-medium">지금까지 수집한 모든 동료들을 한눈에 확인하고 교체할 수 있습니다.</p>
+                        </div>
 
-                                <div className="relative z-10">
-                                    <div className="flex items-center justify-between mb-8">
-                                        <div>
-                                            <h1 className="text-3xl font-black text-slate-900 font-display mb-1">캐릭터 설정</h1>
-                                            <p className="text-slate-500 font-medium">{character.character?.name} 정보</p>
-                                        </div>
-                                        <div className="w-14 h-14 bg-indigo-600 rounded-2xl flex items-center justify-center text-white font-black text-xl shadow-lg rotate-3 group-hover:rotate-0 transition-transform">
-                                            {character.current_level}
-                                        </div>
-                                    </div>
-
-                                    {/* Visual Preview Area */}
-                                    <div className="aspect-[4/5] bg-gradient-to-br from-slate-50 to-indigo-50 rounded-[2.5rem] flex items-center justify-center shadow-inner mb-8 relative overflow-hidden">
-                                        {imageSrc ? (
-                                            <Image
-                                                src={imageSrc}
-                                                alt={character.character?.name || 'Character'}
-                                                fill
-                                                className="object-contain p-4"
-                                            />
-                                        ) : (
-                                            <span className="text-[8rem]">{character.character?.base_image_url}</span>
-                                        )}
-                                    </div>
-
-                                    <div className="space-y-4">
-                                        <div className="w-full h-px bg-slate-100" />
-                                        <div className="flex items-center justify-between text-sm">
-                                            <span className="text-slate-400 font-bold uppercase tracking-widest">Level</span>
-                                            <span className="text-indigo-600 font-black text-lg">{character.current_level}</span>
-                                        </div>
-                                    </div>
-                                </div>
+                        <div className="bg-white px-8 py-4 rounded-[2rem] border-2 border-slate-100 flex items-center gap-4 shadow-xl shadow-slate-200/20">
+                            <div className="flex flex-col items-end">
+                                <span className="text-xs font-black text-slate-400 uppercase tracking-widest">Total Collection</span>
+                                <span className="text-2xl font-black text-indigo-600 font-display">{userCharacters.length} 명</span>
                             </div>
                         </div>
                     </div>
 
-                    {/* Right Side: Companion List */}
-                    <div className="lg:w-3/5 space-y-6">
-                        <div className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-xl shadow-slate-200/50 min-h-[500px] flex flex-col">
-                            <div className="flex items-center justify-between mb-8">
-                                <div className="flex items-center gap-2">
-                                    <UsersIcon className="w-6 h-6 text-indigo-600" />
-                                    <h2 className="text-2xl font-black text-slate-900 font-display">내 동료</h2>
-                                </div>
-                                <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Total {userCharacters.length}</span>
-                            </div>
+                    {/* Companion Grid Section */}
+                    <div className="bg-white rounded-[3rem] p-8 md:p-12 border border-slate-100 shadow-2xl shadow-indigo-100/10 min-h-[600px] flex flex-col">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 flex-1 content-start">
+                            {userCharacters.slice((charPage - 1) * ITEMS_PER_PAGE, charPage * ITEMS_PER_PAGE).map((uc) => {
+                                const isActive = uc.id === character.id;
+                                const ucImage = getLevelImage(uc.current_level, uc.character?.level_images);
+                                const ucImgSrc = ucImage ? `${ucImage}` : null;
 
-                            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 flex-1 content-start">
-                                {userCharacters.slice((charPage - 1) * ITEMS_PER_PAGE, charPage * ITEMS_PER_PAGE).map((uc) => {
-                                    const isActive = uc.id === character.id;
-                                    const ucImage = getLevelImage(uc.current_level, uc.character?.level_images);
-                                    const ucImgSrc = ucImage ? `${ucImage}` : null;
-
-                                    return (
-                                        <button
-                                            key={uc.id}
-                                            onClick={() => switchCharacter(uc.id)}
-                                            className={`relative p-6 rounded-3xl border-2 transition-all flex flex-col items-center justify-center gap-3 aspect-[3/4] w-full ${isActive ? 'border-indigo-600 bg-indigo-50/30' : 'border-slate-100 hover:border-slate-200'
-                                                }`}
-                                        >
-                                            <div className="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center text-5xl shadow-inner overflow-hidden">
-                                                {ucImgSrc ? (
-                                                    <Image
-                                                        src={ucImgSrc}
-                                                        alt={uc.character?.name || 'Character'}
-                                                        width={64}
-                                                        height={64}
-                                                        className="w-full h-full object-contain"
-                                                    />
-                                                ) : (
-                                                    uc.character?.base_image_url
-                                                )}
-                                            </div>
-                                            <div className="text-center">
-                                                <p className="text-[10px] font-bold text-indigo-500 uppercase">LV. {uc.current_level}</p>
-                                                <h4 className="text-sm font-bold text-slate-800">{uc.character?.name}</h4>
-                                            </div>
-                                            {isActive && (
-                                                <div className="absolute top-2 right-2 w-6 h-6 bg-indigo-600 rounded-full flex items-center justify-center">
-                                                    <Check className="w-4 h-4 text-white" />
-                                                </div>
+                                return (
+                                    <button
+                                        key={uc.id}
+                                        onClick={() => switchCharacter(uc.id)}
+                                        className={`group relative p-10 rounded-[3rem] border-4 transition-all flex flex-col items-center justify-center gap-8 aspect-[3/4] w-full ${isActive
+                                            ? 'border-indigo-500 bg-indigo-50/50 shadow-2xl shadow-indigo-100/50 lg:scale-105 z-10'
+                                            : 'border-slate-50 hover:border-indigo-200 hover:bg-slate-50/50 hover:-translate-y-2'
+                                            }`}
+                                    >
+                                        <div className={`w-full aspect-square rounded-[2.5rem] flex items-center justify-center text-7xl shadow-inner overflow-hidden transition-transform duration-500 ${isActive ? 'bg-white' : 'bg-slate-50 group-hover:scale-110'}`}>
+                                            {ucImgSrc ? (
+                                                <Image
+                                                    src={ucImgSrc}
+                                                    alt={uc.character?.name || 'Character'}
+                                                    width={256}
+                                                    height={256}
+                                                    className="w-full h-full object-contain p-0"
+                                                />
+                                            ) : (
+                                                uc.character?.base_image_url
                                             )}
-                                        </button>
-                                    );
-                                })}
-                            </div>
+                                        </div>
 
-                            {/* Paging */}
-                            {userCharacters.length > ITEMS_PER_PAGE && (
-                                <div className="flex justify-center items-center gap-4 mt-8 pt-4 border-t border-slate-50">
-                                    <button
-                                        disabled={charPage === 1}
-                                        onClick={() => setCharPage(prev => prev - 1)}
-                                        className="p-2 rounded-xl border border-slate-100 hover:bg-slate-50 disabled:opacity-30"
-                                    >
-                                        <ChevronLeft className="w-5 h-5" />
+                                        <div className="text-center">
+                                            <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white border border-slate-100 rounded-full mb-3 shadow-sm">
+                                                <Sparkles className="w-3 h-3 text-amber-500" />
+                                                <span className="text-xs font-black text-indigo-600 uppercase tracking-widest">LV. {uc.current_level}</span>
+                                            </div>
+                                            <h4 className="text-xl font-black text-slate-800 font-display">{uc.character?.name}</h4>
+                                        </div>
+
+                                        {isActive && (
+                                            <div className="absolute top-4 right-4 bg-indigo-600 text-white px-4 py-1.5 rounded-full flex items-center gap-2 shadow-lg animate-bounce-slow">
+                                                <Check className="w-4 h-4" />
+                                                <span className="text-[10px] font-black uppercase tracking-widest">Active</span>
+                                            </div>
+                                        )}
                                     </button>
-                                    <span className="text-sm font-bold text-slate-600">{charPage} / {Math.ceil(userCharacters.length / ITEMS_PER_PAGE)}</span>
-                                    <button
-                                        disabled={charPage === Math.ceil(userCharacters.length / ITEMS_PER_PAGE)}
-                                        onClick={() => setCharPage(prev => prev + 1)}
-                                        className="p-2 rounded-xl border border-slate-100 hover:bg-slate-50 disabled:opacity-30"
-                                    >
-                                        <ChevronRight className="w-5 h-5" />
-                                    </button>
-                                </div>
-                            )}
+                                );
+                            })}
                         </div>
+
+                        {/* Paging */}
+                        {userCharacters.length > ITEMS_PER_PAGE && (
+                            <div className="flex justify-center items-center gap-6 mt-12 pt-8 border-t border-slate-100">
+                                <button
+                                    disabled={charPage === 1}
+                                    onClick={() => setCharPage(prev => prev - 1)}
+                                    className="p-3 rounded-2xl border-2 border-slate-100 hover:bg-slate-50 hover:border-indigo-200 transition-all disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:border-slate-100"
+                                >
+                                    <ChevronLeft className="w-6 h-6" />
+                                </button>
+                                <span className="text-lg font-black text-slate-600 font-display">
+                                    {charPage} <span className="text-slate-300 mx-1">/</span> {Math.ceil(userCharacters.length / ITEMS_PER_PAGE)}
+                                </span>
+                                <button
+                                    disabled={charPage === Math.ceil(userCharacters.length / ITEMS_PER_PAGE)}
+                                    onClick={() => setCharPage(prev => prev + 1)}
+                                    className="p-3 rounded-2xl border-2 border-slate-100 hover:bg-slate-50 hover:border-indigo-200 transition-all disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:border-slate-100"
+                                >
+                                    <ChevronRight className="w-6 h-6" />
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
