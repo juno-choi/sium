@@ -2,16 +2,18 @@
 
 import { useShop } from '@/lib/hooks/useShop';
 import { useCharacter } from '@/lib/hooks/useCharacter';
-import { Coins, Loader2, ShoppingBag, CheckCircle2, AlertCircle, Users } from 'lucide-react';
+import { Coins, Loader2, ShoppingBag, CheckCircle2, AlertCircle, Users, Eye } from 'lucide-react';
 import { useState } from 'react';
 import Image from 'next/image';
 import { getLevelImage } from '@/lib/utils/getLevelImage';
 import { Character } from '@/types/character';
+import CharacterPreviewModal from '@/components/shop/CharacterPreviewModal';
 
 export default function ShopPage() {
     const { characters: shopCharacters, loading, buyCharacter } = useShop();
     const { userCharacters, gold } = useCharacter();
     const [buyingId, setBuyingId] = useState<number | null>(null);
+    const [previewCharacter, setPreviewCharacter] = useState<Character | null>(null);
 
     if (loading) {
         return (
@@ -103,6 +105,15 @@ export default function ShopPage() {
                                         ) : (
                                             <span className="text-[8rem]">{char.base_image_url}</span>
                                         )}
+
+                                        {/* Preview Button */}
+                                        <button
+                                            onClick={() => setPreviewCharacter(char)}
+                                            className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm text-slate-700 px-4 py-2 rounded-2xl font-bold text-sm shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-indigo-600 hover:text-white flex items-center gap-2"
+                                        >
+                                            <Eye className="w-4 h-4" />
+                                            미리보기
+                                        </button>
                                     </div>
 
                                     <h3 className="text-2xl md:text-3xl font-black text-slate-900 mb-2 font-display">{char.name}</h3>
@@ -153,6 +164,14 @@ export default function ShopPage() {
                     </div>
                 )}
             </div>
+
+            {/* Character Preview Modal */}
+            {previewCharacter && (
+                <CharacterPreviewModal
+                    character={previewCharacter}
+                    onClose={() => setPreviewCharacter(null)}
+                />
+            )}
         </div>
     );
 }
