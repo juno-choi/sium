@@ -1,30 +1,108 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Habit, HabitDifficulty } from '@/types/habit';
 import DifficultySelect from './DifficultySelect';
 import DaySelect from './DaySelect';
 import { Loader2, Save } from 'lucide-react';
 
+export interface HabitFormData {
+    title: string;
+    description: string;
+    difficulty: HabitDifficulty;
+    mon: boolean;
+    tue: boolean;
+    wed: boolean;
+    thu: boolean;
+    fri: boolean;
+    sat: boolean;
+    sun: boolean;
+    is_active: boolean;
+}
+
+export interface HabitSample {
+    id: string;
+    label: string;
+    data: HabitFormData;
+}
+
+const DEFAULT_SAMPLES: HabitSample[] = [
+    {
+        id: 'exercise',
+        label: '🏃 운동하기',
+        data: {
+            title: '운동하기',
+            description: '30분간 전신 운동을 완료하고 체력을 단련합니다.',
+            difficulty: 'normal',
+            mon: true, tue: true, wed: true, thu: true, fri: true, sat: true, sun: true,
+            is_active: true
+        }
+    },
+    {
+        id: 'study',
+        label: '📚 공부하기',
+        data: {
+            title: '공부하기',
+            description: '1시간 동안 집중해서 공부하고 지력을 높입니다.',
+            difficulty: 'hard',
+            mon: true, tue: true, wed: true, thu: true, fri: true, sat: false, sun: false,
+            is_active: true
+        }
+    }
+];
+
 interface HabitFormProps {
-    initialData?: Habit;
-    onSubmit: (data: any) => Promise<void>;
+    initialData?: Habit | HabitFormData | null;
+    onSubmit: (data: HabitFormData) => Promise<void>;
     isSubmitting: boolean;
 }
 
 export default function HabitForm({ initialData, onSubmit, isSubmitting }: HabitFormProps) {
-    const [title, setTitle] = useState(initialData?.title || '');
-    const [description, setDescription] = useState(initialData?.description || '');
-    const [difficulty, setDifficulty] = useState<HabitDifficulty>(initialData?.difficulty || 'normal');
+    const [title, setTitle] = useState('');
+    const [description, setDescription] = useState('');
+    const [difficulty, setDifficulty] = useState<HabitDifficulty>('normal');
     const [days, setDays] = useState({
-        mon: initialData?.mon ?? true,
-        tue: initialData?.tue ?? true,
-        wed: initialData?.wed ?? true,
-        thu: initialData?.thu ?? true,
-        fri: initialData?.fri ?? true,
-        sat: initialData?.sat ?? false,
-        sun: initialData?.sun ?? false,
+        mon: true,
+        tue: true,
+        wed: true,
+        thu: true,
+        fri: true,
+        sat: false,
+        sun: false,
     });
+
+    // Sync initialData when it changes
+    useEffect(() => {
+        if (initialData) {
+            setTitle(initialData.title || '');
+            setDescription(initialData.description || '');
+            setDifficulty(initialData.difficulty || 'normal');
+            setDays({
+                mon: initialData.mon ?? true,
+                tue: initialData.tue ?? true,
+                wed: initialData.wed ?? true,
+                thu: initialData.thu ?? true,
+                fri: initialData.fri ?? true,
+                sat: initialData.sat ?? false,
+                sun: initialData.sun ?? false,
+            });
+        }
+    }, [initialData]);
+
+    const handleSampleClick = (sampleData: HabitFormData) => {
+        setTitle(sampleData.title);
+        setDescription(sampleData.description);
+        setDifficulty(sampleData.difficulty);
+        setDays({
+            mon: sampleData.mon,
+            tue: sampleData.tue,
+            wed: sampleData.wed,
+            thu: sampleData.thu,
+            fri: sampleData.fri,
+            sat: sampleData.sat,
+            sun: sampleData.sun,
+        });
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -41,14 +119,34 @@ export default function HabitForm({ initialData, onSubmit, isSubmitting }: Habit
             description,
             difficulty,
             ...days,
+            is_active: initialData?.is_active ?? true,
         });
     };
 
     return (
         <form onSubmit={handleSubmit} className="space-y-8">
+            {/* Samples Section */}
+            <div className="mb-8">
+                <label className="block text-sm font-bold text-slate-700 mb-3 px-1">
+                    초보 모험가를 위한 추천 퀘스트
+                </label>
+                <div className="flex flex-wrap gap-3">
+                    {DEFAULT_SAMPLES.map((sample) => (
+                        <button
+                            key={sample.id}
+                            type="button"
+                            onClick={() => handleSampleClick(sample.data)}
+                            className="px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-600 hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-600 transition-all active:scale-95"
+                        >
+                            {sample.label}
+                        </button>
+                    ))}
+                </div>
+            </div>
+
             <div>
                 <label htmlFor="title" className="block text-sm font-bold text-slate-700 mb-2 px-1">
-                    습관 이름
+                    퀘스트 이름
                 </label>
                 <input
                     id="title"

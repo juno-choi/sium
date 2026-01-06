@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useHabits } from '@/lib/hooks/useHabits';
-import HabitForm from '@/components/habits/HabitForm';
+import HabitForm, { HabitFormData } from '@/components/habits/HabitForm';
 import { ChevronLeft, Trash2, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -23,7 +23,7 @@ export default function EditHabitPage() {
         }
     }, [habit, hookLoading, router]);
 
-    const handleSubmit = async (data: any) => {
+    const handleSubmit = async (data: HabitFormData) => {
         setIsSubmitting(true);
         try {
             await updateHabit(id, data);
