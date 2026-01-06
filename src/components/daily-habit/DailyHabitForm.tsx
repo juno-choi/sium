@@ -44,7 +44,7 @@ export default function DailyHabitForm({ onSubmit }: DailyHabitFormProps) {
                 className="w-full py-4 border-2 border-dashed border-slate-200 rounded-2xl text-slate-400 font-bold hover:border-indigo-300 hover:text-indigo-500 hover:bg-indigo-50/50 transition-all flex items-center justify-center gap-2"
             >
                 <Plus className="w-5 h-5" />
-                오늘의 퀘스트 추가
+                일일 퀘스트 추가
             </button>
         );
     }
@@ -67,8 +67,8 @@ export default function DailyHabitForm({ onSubmit }: DailyHabitFormProps) {
                         type="button"
                         onClick={() => setDifficulty(option.value)}
                         className={`flex-1 py-2 px-3 rounded-xl font-bold text-sm border-2 transition-all flex items-center justify-center gap-1.5 ${difficulty === option.value
-                                ? option.color
-                                : 'bg-white border-slate-200 text-slate-400'
+                            ? option.color
+                            : 'bg-white border-slate-200 text-slate-400'
                             }`}
                     >
                         {option.icon}

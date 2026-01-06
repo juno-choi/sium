@@ -2,7 +2,7 @@
 
 import { useTodoList } from '@/lib/hooks/useTodoList';
 import TodoItem from './TodoItem';
-import { Loader2, Calendar, LayoutList } from 'lucide-react';
+import { Loader2, Calendar, LayoutList, Plus } from 'lucide-react';
 import Link from 'next/link';
 
 export default function TodoList() {
@@ -64,6 +64,15 @@ export default function TodoList() {
                     </div>
                 </>
             )}
+            <div className="border-t border-slate-50">
+                <Link
+                    href="/habits/new"
+                    className="w-full py-4 border-2 border-dashed border-slate-200 rounded-2xl text-slate-400 font-bold hover:border-indigo-300 hover:text-indigo-500 hover:bg-indigo-50/50 transition-all flex items-center justify-center gap-2"
+                >
+                    <Plus className="w-5 h-5" />
+                    <span>반복 퀘스트 추가하기</span>
+                </Link>
+            </div>
         </div>
     );
 }

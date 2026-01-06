@@ -167,13 +167,6 @@ export default function DashboardPage() {
                         <h1 className="text-4xl font-black text-slate-900 font-display mb-1">모험 일지</h1>
                         <p className="text-slate-500 font-medium">환영합니다, 모험가님! 오늘의 퀘스트를 수행해보세요.</p>
                     </div>
-                    <Link
-                        href="/habits/new"
-                        className="group flex items-center space-x-2 px-8 py-4 bg-indigo-600 text-white rounded-[2rem] font-bold shadow-xl shadow-indigo-100 hover:bg-slate-900 hover:-translate-y-1 transition-all"
-                    >
-                        <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform" />
-                        <span>새 퀘스트 수락</span>
-                    </Link>
                 </div>
 
                 {/* Character Progress Section */}
