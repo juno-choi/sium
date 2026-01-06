@@ -1,12 +1,28 @@
 'use client';
 
 import { useTodoList } from '@/lib/hooks/useTodoList';
+import { useHabits } from '@/lib/hooks/useHabits';
 import TodoItem from './TodoItem';
-import { Loader2, Calendar, LayoutList, Plus } from 'lucide-react';
-import Link from 'next/link';
+import { Loader2, Calendar, LayoutList } from 'lucide-react';
+import HabitInlineForm from '@/components/habits/HabitInlineForm';
+import { HabitDifficulty } from '@/types/habit';
 
 export default function TodoList() {
-    const { todos, loading, clearHabit } = useTodoList();
+    const { todos, loading, clearHabit, refresh } = useTodoList();
+    const { addHabit } = useHabits();
+
+    const handleQuickAddHabit = async (data: any) => {
+        try {
+            await addHabit({
+                ...data,
+                is_active: true
+            });
+            // Refresh todo list to show the new habit if it's for today (which it is)
+            refresh();
+        } catch (err) {
+            console.error('Failed to add habit:', err);
+        }
+    };
 
     if (loading) {
         return (
@@ -37,12 +53,6 @@ export default function TodoList() {
                         <LayoutList className="w-8 h-8 text-slate-300" />
                     </div>
                     <p className="text-slate-500 font-medium mb-6">오늘 예정된 퀘스트가 없습니다.</p>
-                    <Link
-                        href="/habits/new"
-                        className="inline-flex items-center px-6 py-3 bg-white border border-slate-200 text-indigo-600 rounded-xl font-bold hover:bg-slate-50 transition"
-                    >
-                        새 습관 만들기
-                    </Link>
                 </div>
             ) : (
                 <>
@@ -64,15 +74,8 @@ export default function TodoList() {
                     </div>
                 </>
             )}
-            <div className="border-t border-slate-50">
-                <Link
-                    href="/habits/new"
-                    className="w-full py-4 border-2 border-dashed border-slate-200 rounded-2xl text-slate-400 font-bold hover:border-indigo-300 hover:text-indigo-500 hover:bg-indigo-50/50 transition-all flex items-center justify-center gap-2"
-                >
-                    <Plus className="w-5 h-5" />
-                    <span>반복 퀘스트 추가하기</span>
-                </Link>
-            </div>
+
+            <HabitInlineForm onSubmit={handleQuickAddHabit} />
         </div>
     );
 }
