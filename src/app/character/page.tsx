@@ -1,17 +1,20 @@
 'use client';
 
 import { useCharacter } from '@/lib/hooks/useCharacter';
-import { Loader2, ChevronRight, Check, Users as UsersIcon, ChevronLeft, Sparkles } from 'lucide-react';
+import { Loader2, ChevronRight, Check, Users as UsersIcon, ChevronLeft, Sparkles, Eye } from 'lucide-react';
 import { useState } from 'react';
 import Image from 'next/image';
 import { getLevelImage } from '@/lib/utils/getLevelImage';
 import Link from 'next/link';
+import CharacterPreviewModal from '@/components/shop/CharacterPreviewModal';
+import { Character } from '@/types/character';
 
-const ITEMS_PER_PAGE = 6;
+const ITEMS_PER_PAGE = 8;
 
 export default function CharacterPage() {
     const { character, userCharacters, switchCharacter, loading: charLoading } = useCharacter();
     const [charPage, setCharPage] = useState(1);
+    const [previewChar, setPreviewChar] = useState<Character | null>(null);
 
     if (charLoading) {
         return (
@@ -57,6 +60,12 @@ export default function CharacterPage() {
     return (
         <div className="min-h-screen bg-slate-50 py-12 px-4">
             <div className="max-w-6xl mx-auto">
+                {previewChar && (
+                    <CharacterPreviewModal
+                        character={previewChar}
+                        onClose={() => setPreviewChar(null)}
+                    />
+                )}
                 <div className="space-y-10">
                     {/* Page Header */}
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
@@ -85,9 +94,8 @@ export default function CharacterPage() {
                                 const ucImgSrc = ucImage ? `${ucImage}` : null;
 
                                 return (
-                                    <button
+                                    <div
                                         key={uc.id}
-                                        onClick={() => switchCharacter(uc.id)}
                                         className={`group relative p-10 rounded-[3rem] border-4 transition-all flex flex-col items-center justify-center gap-8 aspect-[3/4] w-full ${isActive
                                             ? 'border-indigo-500 bg-indigo-50/50 shadow-2xl shadow-indigo-100/50 lg:scale-105 z-10'
                                             : 'border-slate-50 hover:border-indigo-200 hover:bg-slate-50/50 hover:-translate-y-2'
@@ -107,12 +115,32 @@ export default function CharacterPage() {
                                             )}
                                         </div>
 
-                                        <div className="text-center">
+                                        <div className="text-center w-full">
                                             <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white border border-slate-100 rounded-full mb-3 shadow-sm">
                                                 <Sparkles className="w-3 h-3 text-amber-500" />
                                                 <span className="text-xs font-black text-indigo-600 uppercase tracking-widest">LV. {uc.current_level}</span>
                                             </div>
                                             <h4 className="text-xl font-black text-slate-800 font-display">{uc.character?.name}</h4>
+                                        </div>
+
+                                        {/* Action Overlay */}
+                                        <div className="absolute inset-x-4 bottom-4 flex gap-2 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300">
+                                            <button
+                                                onClick={() => uc.character && setPreviewChar(uc.character)}
+                                                className="flex-1 bg-white/90 backdrop-blur-sm text-slate-700 py-3 rounded-[1.5rem] font-bold text-sm shadow-lg hover:bg-indigo-600 hover:text-white transition-all flex items-center justify-center gap-2"
+                                            >
+                                                <Eye className="w-4 h-4" />
+                                                미리보기
+                                            </button>
+                                            {!isActive && (
+                                                <button
+                                                    onClick={() => switchCharacter(uc.id)}
+                                                    className="flex-1 bg-indigo-600 text-white py-3 rounded-[1.5rem] font-bold text-sm shadow-xl hover:bg-slate-900 transition-all flex items-center justify-center gap-2"
+                                                >
+                                                    <Check className="w-4 h-4" />
+                                                    선택하기
+                                                </button>
+                                            )}
                                         </div>
 
                                         {isActive && (
@@ -121,7 +149,7 @@ export default function CharacterPage() {
                                                 <span className="text-[10px] font-black uppercase tracking-widest">Active</span>
                                             </div>
                                         )}
-                                    </button>
+                                    </div>
                                 );
                             })}
                         </div>
