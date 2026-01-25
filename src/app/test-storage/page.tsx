@@ -9,10 +9,11 @@ export default function TestStoragePage() {
   const [error, setError] = useState<string>('');
   const [signedUrls, setSignedUrls] = useState<Record<string, string>>({});
 
+  const basePath = 'Layer Lab/2D Art Maker/AMCasual Character/Demo/SpineAnimation';
   const testAssets = [
-    { name: 'casual-character.json', path: 'spine/casual-character.json' },
-    { name: 'casual-character.atlas', path: 'spine/casual-character.atlas' },
-    { name: 'casual-character.png', path: 'spine/casual-character.png' }
+    { name: 'Casual Character.json', path: `${basePath}/Casual Character.json` },
+    { name: 'Casual Character.atlas.txt', path: `${basePath}/Casual Character.atlas.txt` },
+    { name: 'Casual Character.png', path: `${basePath}/Casual Character.png` }
   ];
 
   useEffect(() => {
@@ -58,7 +59,7 @@ export default function TestStoragePage() {
       // 3. Spine 폴더의 파일 목록 확인
       const { data: files, error: filesError } = await supabase.storage
         .from('assets')
-        .list('spine', {
+        .list(basePath, {
           limit: 100,
           offset: 0,
           sortBy: { column: 'name', order: 'asc' }
@@ -71,7 +72,7 @@ export default function TestStoragePage() {
       }
 
       if (!files || files.length === 0) {
-        setError('❌ spine 폴더에 파일이 없습니다. Step 3을 완료하세요.');
+        setError('❌ 해당 경로에 파일이 없습니다. 파일을 업로드해 주세요.');
         setStatus('error');
         return;
       }
@@ -96,8 +97,8 @@ export default function TestStoragePage() {
       setSignedUrls(urls);
 
       // 5. JSON 파일 내용 확인
-      if (urls['casual-character.json']) {
-        const response = await fetch(urls['casual-character.json']);
+      if (urls['Casual Character.json']) {
+        const response = await fetch(urls['Casual Character.json']);
         const jsonData = await response.json();
         setResult({
           message: '✅ 모든 검증 완료!',

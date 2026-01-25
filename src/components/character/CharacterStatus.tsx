@@ -4,8 +4,7 @@ import { UserCharacter } from '@/types/character';
 import LevelProgress from './LevelProgress';
 import { Coins, Sparkles } from 'lucide-react';
 import { useCharacter } from '@/lib/hooks/useCharacter';
-import { getLevelImage } from '@/lib/utils/getLevelImage';
-import Image from 'next/image';
+import CharacterCanvas from './CharacterCanvas';
 
 interface CharacterStatusProps {
     userCharacter: UserCharacter;
@@ -16,10 +15,6 @@ export default function CharacterStatus({ userCharacter }: CharacterStatusProps)
     const { gold } = useCharacter();
 
     if (!character) return null;
-
-    // Get level-based image
-    const levelImage = getLevelImage(current_level, character.level_images);
-    const imageSrc = levelImage ? `${levelImage}` : null;
 
     return (
         <div className="space-y-6">
@@ -32,16 +27,13 @@ export default function CharacterStatus({ userCharacter }: CharacterStatusProps)
                     {/* Character Visual */}
                     <div className="relative group">
                         <div className="w-40 h-40 md:w-52 md:h-52 bg-gradient-to-br from-slate-50 to-indigo-50 rounded-[3rem] flex items-center justify-center shadow-inner animate-[float_4s_ease-in-out_infinite] overflow-hidden">
-                            {imageSrc ? (
-                                <Image
-                                    src={imageSrc}
-                                    alt={character.name}
-                                    fill
-                                    className="object-contain p-4"
-                                />
-                            ) : (
-                                <span className="text-8xl md:text-9xl">{character.base_image_url}</span>
-                            )}
+                            <CharacterCanvas
+                                characterId="casual-character"
+                                animationName="idle"
+                                loop={true}
+                                width={160}
+                                height={200}
+                            />
                         </div>
                         <div className="absolute -bottom-4 inset-x-0 mx-auto w-32 h-6 bg-slate-900/10 blur-xl rounded-full -z-10" />
 
