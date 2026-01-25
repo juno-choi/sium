@@ -29,7 +29,7 @@ export default function CharacterStatus({ userCharacter }: CharacterStatusProps)
                         <div className="w-40 h-40 md:w-52 md:h-52 bg-gradient-to-br from-slate-50 to-indigo-50 rounded-[3rem] flex items-center justify-center shadow-inner animate-[float_4s_ease-in-out_infinite] overflow-hidden">
                             <CharacterCanvas
                                 characterId="casual-character"
-                                animationName="idle"
+                                animationName="Idle"
                                 loop={true}
                                 width={160}
                                 height={200}
