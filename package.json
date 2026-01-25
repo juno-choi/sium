@@ -6,14 +6,17 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "upload:spine-assets": "node -r dotenv/config -r esbuild-register scripts/upload-spine-assets.ts"
   },
   "dependencies": {
+    "@esotericsoftware/spine-phaser": "^4.2.47",
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.89.0",
     "@tailwindcss/typography": "^0.5.19",
     "lucide-react": "^0.562.0",
     "next": "16.1.0",
+    "phaser": "^3.87.0",
     "react": "19.2.3",
     "react-dom": "19.2.3"
   },

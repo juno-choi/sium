@@ -2,6 +2,7 @@
 create extension if not exists "uuid-ossp";
 
 -- Reset (Drop existing tables if they exist)
+drop table if exists public.users;
 drop table if exists public.habit_logs;
 drop table if exists public.habits;
 drop table if exists public.user_characters;
@@ -124,3 +125,46 @@ $$ language plpgsql security definer;
 
 drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created after insert on auth.users for each row execute procedure public.handle_new_user();
+
+create table public.daily_habits (
+  id uuid default uuid_generate_v4() primary key,
+  user_id uuid references auth.users(id) on delete cascade not null,
+  title varchar(100) not null,
+  description text,
+  difficulty habit_difficulty default 'normal' not null,
+  quest_date date default current_date not null,
+  is_active boolean default true not null,
+  created_at timestamp with time zone default now() not null
+);
+alter table public.daily_habits enable row level security;
+create policy "Users can manage own daily habits." 
+  on public.daily_habits for all using (auth.uid() = user_id);
+
+  -- daily_habit_logs 테이블 추가
+create table if not exists public.daily_habit_logs (
+  id uuid default uuid_generate_v4() primary key,
+  daily_habit_id uuid references public.daily_habits(id) on delete cascade not null,
+  user_id uuid references auth.users(id) on delete cascade not null,
+  completed_date date default current_date not null,
+  xp_earned int not null,
+  gold_earned int default 0 not null,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  unique(daily_habit_id, completed_date)
+);
+alter table public.daily_habit_logs enable row level security;
+create policy "Users can manage own daily habit logs." 
+  on public.daily_habit_logs for all using (auth.uid() = user_id);
+
+  -- RLS 활성화 (이미 활성화되어 있을 가능성 높음)
+ALTER TABLE storage.objects ENABLE ROW LEVEL SECURITY;
+
+-- 정책 1: 인증된 사용자는 assets bucket의 파일을 읽을 수 있음
+  CREATE POLICY "Allow authenticated users to view buckets"
+ON storage.buckets FOR SELECT
+TO authenticated
+USING (true);
+
+CREATE POLICY "Allow authenticated users to select files"
+ON storage.objects FOR SELECT
+TO authenticated
+USING (bucket_id = 'assets');
